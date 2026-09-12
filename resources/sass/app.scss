@@ -1,0 +1,50 @@
+// =============================================================
+// TAPGO TRAVEL — Bootstrap 5 custom theme
+// Brand identity ref: PRD section 32 (Brand Identity)
+// =============================================================
+
+// 1. Bootstrap functions (needed before overriding variables)
+@import "bootstrap/scss/functions";
+
+// 2. TAPGO TRAVEL brand color overrides
+$primary:   #0F5132; // Deep green / emerald
+$secondary: #F5F0E6; // Warm cream / sand
+$warning:   #C2530E; // Sunset orange / warm yellow (accent)
+$light:     #FFFFFF; // White
+$gray-200:  #F1F1F1; // Soft gray
+$dark:      #29292B; // Charcoal
+
+$body-color: $dark;
+
+// Rounded cards & soft shadows per PRD UI/UX requirements
+$border-radius:       0.75rem;
+$border-radius-lg:    1rem;
+$border-radius-sm:    0.5rem;
+$box-shadow:          0 0.5rem 1.5rem rgba(0, 0, 0, 0.08);
+$box-shadow-sm:       0 0.25rem 0.75rem rgba(0, 0, 0, 0.06);
+
+// Typography
+$font-family-sans-serif: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+
+// 3. Bootstrap variables (defaults, using our overrides above)
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/variables-dark";
+
+// 4. Bootstrap maps + mixins
+@import "bootstrap/scss/maps";
+@import "bootstrap/scss/mixins";
+@import "bootstrap/scss/root";
+
+// 5. Full Bootstrap 5 component set
+@import "bootstrap/scss/bootstrap";
+
+// =============================================================
+// TAPGO TRAVEL utility tweaks
+// =============================================================
+.card {
+    box-shadow: $box-shadow-sm;
+}
+
+.btn {
+    font-weight: 600;
+}
