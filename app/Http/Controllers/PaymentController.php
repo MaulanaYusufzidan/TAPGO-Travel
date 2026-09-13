@@ -58,16 +58,49 @@ class PaymentController extends Controller
             return response()->json(['message' => 'Payment not found'], 404);
         }
 
-        match (true) {
-            in_array($transactionStatus, ['capture', 'settlement']) && $fraudStatus !== 'deny'
-                => $this->paymentService->markAsPaid($payment, $request->input('transaction_id'), $request->all()),
-            in_array($transactionStatus, ['deny', 'cancel']) || $fraudStatus === 'deny'
-                => $this->paymentService->markAsFailed($payment, $request->all()),
-            $transactionStatus === 'expire'
-                => $this->paymentService->markAsExpired($payment),
-            default => null, // 'pending' -> tidak ada perubahan, tunggu callback berikutnya
-        };
+        $this->paymentService->applyMidtransStatus(
+            $payment,
+            $transactionStatus,
+            $fraudStatus,
+            $request->input('transaction_id'),
+            $request->all(),
+        );
 
         return response()->json(['message' => 'OK']);
+    }
+
+    /**
+     * Verifikasi status pembayaran secara aktif ke Midtrans Status API
+     * (PRD section 19 flow: "Verify Transaction"). Berguna untuk
+     * tombol "Cek Status Pembayaran" manual kalau webhook callback
+     * belum/tidak sampai.
+     */
+    public function verifyStatus(Booking $booking): \Illuminate\Http\RedirectResponse
+    {
+        abort_unless($booking->user_id === auth()->id(), 403);
+
+        $payment = $booking->payments()->latest()->first();
+
+        if (! $payment) {
+            return back()->with('status', 'Belum ada data pembayaran untuk booking ini.');
+        }
+
+        try {
+            $status = $this->midtrans->getTransactionStatus($booking->booking_code);
+        } catch (\Throwable $e) {
+            return back()->withErrors(['payment' => 'Gagal mengambil status dari Midtrans: '.$e->getMessage()]);
+        }
+
+        $this->paymentService->applyMidtransStatus(
+            $payment,
+            (string) ($status['transaction_status'] ?? ''),
+            $status['fraud_status'] ?? null,
+            $status['transaction_id'] ?? null,
+            $status,
+        );
+
+        return redirect()
+            ->route('bookings.confirmation', $booking)
+            ->with('status', 'Status pembayaran diperbarui: '.($status['transaction_status'] ?? 'unknown'));
     }
 }

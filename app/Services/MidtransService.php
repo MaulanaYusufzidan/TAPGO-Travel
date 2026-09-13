@@ -100,4 +100,37 @@ class MidtransService
 
         return hash_equals($expected, $signatureKey);
     }
+
+    protected function coreApiBaseUrl(): string
+    {
+        return $this->isProduction
+            ? 'https://api.midtrans.com/v2'
+            : 'https://api.sandbox.midtrans.com/v2';
+    }
+
+    /**
+     * Cek status transaksi langsung ke Midtrans Core API (Status API).
+     * Dipakai untuk verifikasi aktif kalau webhook callback belum
+     * masuk, atau untuk tombol "Cek Status Pembayaran" manual.
+     *
+     * @throws \RuntimeException kalau request ke Midtrans gagal
+     */
+    public function getTransactionStatus(string $orderId): array
+    {
+        $response = Http::withBasicAuth($this->serverKey, '')
+            ->acceptJson()
+            ->get($this->coreApiBaseUrl()."/{$orderId}/status");
+
+        if ($response->failed()) {
+            Log::error('Midtrans get status failed', [
+                'order_id' => $orderId,
+                'status' => $response->status(),
+                'body' => $response->body(),
+            ]);
+
+            throw new \RuntimeException('Gagal mengambil status transaksi Midtrans: '.$response->body());
+        }
+
+        return $response->json();
+    }
 }

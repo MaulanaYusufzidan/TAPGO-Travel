@@ -25,6 +25,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/checkout', [BookingController::class, 'checkout'])->name('checkout.show');
     Route::post('/checkout/confirm', [BookingController::class, 'confirm'])->name('bookings.confirm');
     Route::get('/bookings/{booking}/confirmation', [BookingController::class, 'confirmation'])->name('bookings.confirmation');
+    Route::post('/bookings/{booking}/verify-payment', [PaymentController::class, 'verifyStatus'])->name('payments.verify');
 });
 
 Route::post('/webhooks/midtrans', [PaymentController::class, 'handleMidtransCallback'])->name('webhooks.midtrans');

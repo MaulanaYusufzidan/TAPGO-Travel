@@ -21,18 +21,27 @@
             </div>
 
             @if ($payment && $payment->snap_redirect_url)
-                <a href="{{ $payment->snap_redirect_url }}" target="_blank" class="btn btn-primary btn-lg mb-4">
+                <a href="{{ $payment->snap_redirect_url }}" target="_blank" class="btn btn-primary btn-lg mb-3">
                     Bayar Sekarang (Midtrans Sandbox)
                 </a>
             @elseif ($payment)
-                <p class="small text-danger mb-4">
+                <p class="small text-danger mb-3">
                     Link pembayaran belum tersedia (Midtrans belum dikonfigurasi di server ini).
                 </p>
             @endif
 
+            @if ($payment && in_array($payment->status, ['pending']))
+                <form method="POST" action="{{ route('payments.verify', $booking) }}" class="mb-4">
+                    @csrf
+                    <button type="submit" class="btn btn-outline-secondary btn-sm">
+                        Cek Status Pembayaran
+                    </button>
+                </form>
+            @endif
+
             <p class="small text-muted">
-                Handling payment callback &amp; verifikasi status otomatis
-                akan menyusul di commit berikutnya.
+                Status pembayaran diperbarui otomatis lewat callback Midtrans,
+                atau bisa dicek manual lewat tombol di atas.
             </p>
         </div>
     </div>

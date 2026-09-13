@@ -97,4 +97,27 @@ class PaymentService
 
         return $payment->fresh();
     }
+
+    /**
+     * Terapkan transaction_status dari Midtrans (baik dari webhook
+     * callback maupun dari Status API aktif) ke sebuah Payment,
+     * memakai mapping yang sama supaya kedua jalur konsisten.
+     */
+    public function applyMidtransStatus(
+        Payment $payment,
+        string $transactionStatus,
+        ?string $fraudStatus = null,
+        ?string $transactionId = null,
+        ?array $rawResponse = null,
+    ): Payment {
+        return match (true) {
+            in_array($transactionStatus, ['capture', 'settlement']) && $fraudStatus !== 'deny'
+                => $this->markAsPaid($payment, $transactionId, $rawResponse),
+            in_array($transactionStatus, ['deny', 'cancel']) || $fraudStatus === 'deny'
+                => $this->markAsFailed($payment, $rawResponse),
+            $transactionStatus === 'expire'
+                => $this->markAsExpired($payment),
+            default => $payment, // 'pending' -> tidak ada perubahan
+        };
+    }
 }
