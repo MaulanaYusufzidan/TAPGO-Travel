@@ -70,6 +70,11 @@ class Trip extends Model
         return $this->hasMany(TripExclusion::class)->orderBy('sort_order');
     }
 
+    public function schedules(): HasMany
+    {
+        return $this->hasMany(Schedule::class);
+    }
+
     public function scopePublished($query)
     {
         return $query->where('status', 'published');
