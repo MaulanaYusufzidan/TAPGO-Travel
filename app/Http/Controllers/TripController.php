@@ -41,4 +41,15 @@ class TripController extends Controller
             'filters' => $request->only(['q', 'destination', 'category', 'price_min', 'price_max', 'sort']),
         ]);
     }
+
+    public function show(Trip $trip): View
+    {
+        abort_unless($trip->status === 'published', 404);
+
+        $trip->load(['destination', 'category', 'images', 'itineraries', 'inclusions', 'exclusions']);
+
+        return view('trips.show', [
+            'trip' => $trip,
+        ]);
+    }
 }

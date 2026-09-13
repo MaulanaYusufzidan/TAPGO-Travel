@@ -11,3 +11,4 @@ Route::get('/', function () {
 Route::get('/destinations', [DestinationController::class, 'index'])->name('destinations.index');
 Route::get('/destinations/{destination}', [DestinationController::class, 'show'])->name('destinations.show');
 Route::get('/trips', [TripController::class, 'index'])->name('trips.index');
+Route::get('/trips/{trip}', [TripController::class, 'show'])->name('trips.show');
