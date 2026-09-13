@@ -3,18 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Models\Schedule;
+use App\Services\AvailabilityService;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
 class BookingController extends Controller
 {
+    public function __construct(protected AvailabilityService $availability)
+    {
+    }
+
     /**
      * Tampilkan form input data traveler.
      * PRD section 8 (Core User Journey): Select Schedule -> Select
      * Travelers -> Traveler Information.
      */
-    public function create(Request $request): View
+    public function create(Request $request): View|RedirectResponse
     {
         $validated = $request->validate([
             'schedule_id' => ['required', 'exists:schedules,id'],
@@ -22,6 +27,12 @@ class BookingController extends Controller
         ]);
 
         $schedule = Schedule::with('trip')->findOrFail($validated['schedule_id']);
+
+        if (! $this->availability->checkAvailability($schedule, (int) $validated['quantity'])) {
+            return redirect()
+                ->route('trips.show', $schedule->trip)
+                ->withErrors(['quantity' => 'Kuota tidak cukup. Sisa kursi: '.$schedule->available_seats.'.']);
+        }
 
         return view('bookings.create', [
             'schedule' => $schedule,
@@ -49,6 +60,12 @@ class BookingController extends Controller
         ]);
 
         $schedule = Schedule::with('trip')->findOrFail($validated['schedule_id']);
+
+        if (! $this->availability->checkAvailability($schedule, count($validated['travelers']))) {
+            return back()
+                ->withInput()
+                ->withErrors(['schedule_id' => 'Kuota tidak cukup. Sisa kursi: '.$schedule->fresh()->available_seats.'.']);
+        }
 
         session(['pending_booking' => $validated]);
 
