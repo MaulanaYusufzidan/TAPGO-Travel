@@ -48,3 +48,26 @@ $font-family-sans-serif: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif
 .btn {
     font-weight: 600;
 }
+
+// Hero section (homepage)
+.tapgo-hero {
+    background: linear-gradient(135deg, $primary 0%, darken($primary, 12%) 100%);
+
+    &__overlay {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at top right, rgba($warning, 0.25), transparent 60%);
+        pointer-events: none;
+    }
+
+    &__search .form-control {
+        border-color: $gray-200;
+    }
+}
+
+@media (min-width: 992px) {
+    .py-lg-6 {
+        padding-top: 5rem !important;
+        padding-bottom: 5rem !important;
+    }
+}

@@ -3,8 +3,9 @@
 @section('title', 'TAPGO TRAVEL — Discover More. Travel Better.')
 
 @section('content')
+    @include('layouts.partials.hero')
+
     <div class="container py-5">
-        <h1 class="text-primary fw-bold">TAPGO TRAVEL</h1>
-        <p class="lead">Base layout aktif. Navbar, footer, dan hero section menyusul pada commit berikutnya.</p>
+        <p class="lead">Navbar, footer, dan hero section sudah aktif. Konten destinasi &amp; trip menyusul pada fase berikutnya.</p>
     </div>
 @endsection
