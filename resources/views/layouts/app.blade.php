@@ -41,11 +41,7 @@
     </main>
 
     <footer id="site-footer">
-        @hasSection('footer')
-            @yield('footer')
-        @else
-            {{-- Footer component: feat: create footer component --}}
-        @endif
+        @include('layouts.partials.footer')
     </footer>
 
     @stack('scripts')
