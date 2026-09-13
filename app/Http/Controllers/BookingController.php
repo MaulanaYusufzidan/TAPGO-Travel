@@ -6,6 +6,7 @@ use App\Models\Booking;
 use App\Models\Schedule;
 use App\Services\AvailabilityService;
 use App\Services\BookingService;
+use App\Services\PaymentService;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
@@ -18,6 +19,7 @@ class BookingController extends Controller
     public function __construct(
         protected AvailabilityService $availability,
         protected BookingService $bookingService,
+        protected PaymentService $paymentService,
     ) {
     }
 
@@ -158,6 +160,8 @@ class BookingController extends Controller
             foreach ($pending['travelers'] as $traveler) {
                 $booking->travelers()->create($traveler);
             }
+
+            $this->paymentService->createForBooking($booking);
 
             return $booking;
         });

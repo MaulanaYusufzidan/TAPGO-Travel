@@ -45,6 +45,11 @@ class Booking extends Model
         return $this->hasMany(BookingTraveler::class);
     }
 
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
+
     public function scopeStatus($query, string $status)
     {
         return $query->where('status', $status);
