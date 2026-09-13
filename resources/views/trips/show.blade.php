@@ -99,6 +99,7 @@
                             </p>
                             <button type="button" class="btn btn-primary w-100" disabled>Book Now</button>
                         @else
+                            <form method="GET" action="{{ route('bookings.create') }}">
                             <label class="form-label small fw-semibold text-uppercase text-muted">Pilih Jadwal</label>
                             <div class="list-group mb-3">
                                 @foreach ($schedules as $schedule)
@@ -117,7 +118,7 @@
                             </div>
 
                             <label for="traveler-qty" class="form-label small fw-semibold text-uppercase text-muted">Jumlah Traveler</label>
-                            <input type="number" id="traveler-qty" class="form-control mb-3" value="1" min="1">
+                            <input type="number" name="quantity" id="traveler-qty" class="form-control mb-3" value="1" min="1">
 
                             <div class="d-flex justify-content-between small text-muted mb-2">
                                 <span>Harga / orang</span>
@@ -128,9 +129,10 @@
                                 <span id="schedule-total">Rp 0</span>
                             </div>
 
-                            <button type="button" class="btn btn-primary w-100" disabled>
-                                Book Now (input traveler menyusul)
+                            <button type="submit" class="btn btn-primary w-100">
+                                Book Now
                             </button>
+                            </form>
                         @endif
                     </div>
                 </div>
