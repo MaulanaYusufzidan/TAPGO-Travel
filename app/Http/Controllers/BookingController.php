@@ -6,6 +6,7 @@ use App\Models\Booking;
 use App\Models\Schedule;
 use App\Services\AvailabilityService;
 use App\Services\BookingService;
+use App\Services\MidtransService;
 use App\Services\PaymentService;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
@@ -20,6 +21,7 @@ class BookingController extends Controller
         protected AvailabilityService $availability,
         protected BookingService $bookingService,
         protected PaymentService $paymentService,
+        protected MidtransService $midtrans,
     ) {
     }
 
@@ -161,7 +163,7 @@ class BookingController extends Controller
                 $booking->travelers()->create($traveler);
             }
 
-            $this->paymentService->createForBooking($booking);
+            $this->paymentService->createForBooking($booking, null, $this->midtrans);
 
             return $booking;
         });
@@ -186,8 +188,11 @@ class BookingController extends Controller
     {
         abort_unless($booking->user_id === Auth::id(), 403);
 
-        $booking->load('schedule.trip', 'travelers');
+        $booking->load('schedule.trip', 'travelers', 'payments');
 
-        return view('bookings.confirmation', ['booking' => $booking]);
+        return view('bookings.confirmation', [
+            'booking' => $booking,
+            'payment' => $booking->payments->last(),
+        ]);
     }
 }

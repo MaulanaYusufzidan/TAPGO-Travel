@@ -14,6 +14,8 @@ class Payment extends Model
         'booking_id',
         'amount',
         'method',
+        'snap_token',
+        'snap_redirect_url',
         'transaction_id',
         'status',
         'paid_at',

@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Booking;
 use App\Models\Payment;
+use Illuminate\Support\Facades\Log;
 
 /**
  * PaymentService
@@ -23,15 +24,34 @@ class PaymentService
 {
     /**
      * Buat record Payment berstatus pending untuk sebuah booking,
-     * senilai booking->total (bukan dari input user).
+     * senilai booking->total (bukan dari input user). Kalau
+     * MidtransService disediakan, langsung buat Snap transaction dan
+     * simpan token + redirect_url-nya.
      */
-    public function createForBooking(Booking $booking, ?string $method = null): Payment
+    public function createForBooking(Booking $booking, ?string $method = null, ?MidtransService $midtrans = null): Payment
     {
-        return $booking->payments()->create([
+        $payment = $booking->payments()->create([
             'amount' => $booking->total,
             'method' => $method,
             'status' => 'pending',
         ]);
+
+        if ($midtrans) {
+            try {
+                $snap = $midtrans->createSnapTransaction($booking);
+                $payment->update([
+                    'snap_token' => $snap['token'] ?? null,
+                    'snap_redirect_url' => $snap['redirect_url'] ?? null,
+                ]);
+            } catch (\Throwable $e) {
+                Log::warning('Gagal membuat Snap transaction, payment tetap dibuat tanpa snap_token', [
+                    'booking_id' => $booking->id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
+
+        return $payment->fresh();
     }
 
     /**

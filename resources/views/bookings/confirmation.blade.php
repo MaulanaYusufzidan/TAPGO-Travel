@@ -20,9 +20,19 @@
                 </div>
             </div>
 
+            @if ($payment && $payment->snap_redirect_url)
+                <a href="{{ $payment->snap_redirect_url }}" target="_blank" class="btn btn-primary btn-lg mb-4">
+                    Bayar Sekarang (Midtrans Sandbox)
+                </a>
+            @elseif ($payment)
+                <p class="small text-danger mb-4">
+                    Link pembayaran belum tersedia (Midtrans belum dikonfigurasi di server ini).
+                </p>
+            @endif
+
             <p class="small text-muted">
-                Integrasi pembayaran Midtrans Sandbox dan e-ticket akan menyusul
-                di fase Payment &amp; Ticket berikutnya.
+                Handling payment callback &amp; verifikasi status otomatis
+                akan menyusul di commit berikutnya.
             </p>
         </div>
     </div>
