@@ -33,11 +33,7 @@
     <a class="visually-hidden-focusable" href="#site-content">Skip to content</a>
 
     <header id="site-header">
-        @hasSection('header')
-            @yield('header')
-        @else
-            {{-- Navbar component: feat: create navigation component --}}
-        @endif
+        @include('layouts.partials.navbar')
     </header>
 
     <main id="site-content" class="flex-grow-1">
