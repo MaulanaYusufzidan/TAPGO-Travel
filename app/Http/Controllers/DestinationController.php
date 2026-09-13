@@ -35,4 +35,23 @@ class DestinationController extends Controller
             'filters' => $request->only(['q', 'location', 'sort']),
         ]);
     }
+
+    public function show(Destination $destination): View
+    {
+        abort_unless($destination->status === 'published', 404);
+
+        $destination->load('images');
+
+        $related = Destination::query()
+            ->published()
+            ->where('id', '!=', $destination->id)
+            ->inRandomOrder()
+            ->limit(3)
+            ->get();
+
+        return view('destinations.show', [
+            'destination' => $destination,
+            'related' => $related,
+        ]);
+    }
 }
