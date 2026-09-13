@@ -43,6 +43,11 @@ class Destination extends Model
         return $this->hasMany(DestinationImage::class)->orderBy('sort_order');
     }
 
+    public function trips(): HasMany
+    {
+        return $this->hasMany(Trip::class);
+    }
+
     public function scopePublished($query)
     {
         return $query->where('status', 'published');
