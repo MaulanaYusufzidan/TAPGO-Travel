@@ -4,14 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\Schedule;
 use App\Services\AvailabilityService;
+use App\Services\BookingService;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
 class BookingController extends Controller
 {
-    public function __construct(protected AvailabilityService $availability)
-    {
+    public function __construct(
+        protected AvailabilityService $availability,
+        protected BookingService $bookingService,
+    ) {
     }
 
     /**
@@ -42,10 +45,11 @@ class BookingController extends Controller
 
     /**
      * Terima data traveler.
-     * Catatan: penyimpanan Booking sesungguhnya, pengecekan
-     * availability, kalkulasi harga, dan halaman checkout masih
-     * menyusul di commit-commit berikutnya (PRD section 39 Git
-     * Development Strategy — grup Booking).
+     * Catatan: penyimpanan Booking permanen & halaman checkout masih
+     * menyusul di commit berikutnya (PRD section 39 Git Development
+     * Strategy — grup Booking). Price breakdown sudah dihitung di sini
+     * oleh BookingService (section 18: total dihitung backend, bukan
+     * dipercayakan ke frontend).
      */
     public function store(Request $request): RedirectResponse
     {
@@ -60,17 +64,24 @@ class BookingController extends Controller
         ]);
 
         $schedule = Schedule::with('trip')->findOrFail($validated['schedule_id']);
+        $quantity = count($validated['travelers']);
 
-        if (! $this->availability->checkAvailability($schedule, count($validated['travelers']))) {
+        if (! $this->availability->checkAvailability($schedule, $quantity)) {
             return back()
                 ->withInput()
                 ->withErrors(['schedule_id' => 'Kuota tidak cukup. Sisa kursi: '.$schedule->fresh()->available_seats.'.']);
         }
 
-        session(['pending_booking' => $validated]);
+        $breakdown = $this->bookingService->calculatePrice($schedule, $quantity);
+
+        session([
+            'pending_booking' => array_merge($validated, ['price_breakdown' => $breakdown]),
+        ]);
+
+        $total = 'Rp '.number_format($breakdown['total'], 0, ',', '.');
 
         return redirect()
             ->route('trips.show', $schedule->trip)
-            ->with('status', 'Data traveler tersimpan sementara ('.count($validated['travelers']).' orang). Pengecekan ketersediaan, kalkulasi harga, dan checkout menyusul di commit berikutnya.');
+            ->with('status', "Data traveler tersimpan sementara ({$quantity} orang). Total: {$total} (subtotal Rp ".number_format($breakdown['subtotal'], 0, ',', '.').' + fee Rp '.number_format($breakdown['service_fee'], 0, ',', '.').'). Halaman checkout menyusul di commit berikutnya.');
     }
 }
