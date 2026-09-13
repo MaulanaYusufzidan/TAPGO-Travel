@@ -86,4 +86,18 @@ class MidtransService
             'redirect_url' => $response->json('redirect_url'),
         ];
     }
+
+    /**
+     * Verifikasi signature_key notifikasi Midtrans (PRD section 19:
+     * "Payment callback harus diverifikasi server-side").
+     *
+     * Formula resmi Midtrans:
+     * SHA512(order_id + status_code + gross_amount + ServerKey)
+     */
+    public function verifySignature(string $orderId, string $statusCode, string $grossAmount, string $signatureKey): bool
+    {
+        $expected = hash('sha512', $orderId.$statusCode.$grossAmount.$this->serverKey);
+
+        return hash_equals($expected, $signatureKey);
+    }
 }
