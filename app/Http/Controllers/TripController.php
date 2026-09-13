@@ -48,8 +48,15 @@ class TripController extends Controller
 
         $trip->load(['destination', 'category', 'images', 'itineraries', 'inclusions', 'exclusions']);
 
+        $schedules = $trip->schedules()
+            ->available()
+            ->where('date', '>=', now()->toDateString())
+            ->orderBy('date')
+            ->get();
+
         return view('trips.show', [
             'trip' => $trip,
+            'schedules' => $schedules,
         ]);
     }
 }
