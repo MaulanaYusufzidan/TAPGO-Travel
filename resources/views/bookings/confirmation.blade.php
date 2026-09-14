@@ -39,6 +39,12 @@
                 </form>
             @endif
 
+            @if ($booking->status === 'confirmed')
+                <a href="{{ route('bookings.ticket', $booking) }}" class="btn btn-primary mb-4">
+                    Lihat E-Ticket
+                </a>
+            @endif
+
             <p class="small text-muted">
                 Status pembayaran diperbarui otomatis lewat callback Midtrans,
                 atau bisa dicek manual lewat tombol di atas.
