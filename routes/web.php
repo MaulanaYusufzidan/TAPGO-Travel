@@ -43,4 +43,13 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::put('/{destination:id}', 'update')->name('update');
         Route::delete('/{destination:id}', 'destroy')->name('destroy');
     });
+
+    Route::controller(\App\Http\Controllers\Admin\TripController::class)->prefix('trips')->name('trips.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/create', 'create')->name('create');
+        Route::post('/', 'store')->name('store');
+        Route::get('/{trip:id}/edit', 'edit')->name('edit');
+        Route::put('/{trip:id}', 'update')->name('update');
+        Route::delete('/{trip:id}', 'destroy')->name('destroy');
+    });
 });
