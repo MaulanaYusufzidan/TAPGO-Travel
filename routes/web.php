@@ -54,4 +54,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     });
 
     Route::resource('schedules', \App\Http\Controllers\Admin\ScheduleController::class)->except('show');
+
+    Route::controller(\App\Http\Controllers\Admin\BookingController::class)->prefix('bookings')->name('bookings.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/{booking}', 'show')->name('show');
+        Route::patch('/{booking}/status', 'updateStatus')->name('update-status');
+        Route::post('/{booking}/cancel', 'cancel')->name('cancel');
+    });
 });
