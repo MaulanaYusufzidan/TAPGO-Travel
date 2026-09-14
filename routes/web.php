@@ -52,4 +52,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::put('/{trip:id}', 'update')->name('update');
         Route::delete('/{trip:id}', 'destroy')->name('destroy');
     });
+
+    Route::resource('schedules', \App\Http\Controllers\Admin\ScheduleController::class)->except('show');
 });
