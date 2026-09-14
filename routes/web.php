@@ -61,4 +61,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::patch('/{booking}/status', 'updateStatus')->name('update-status');
         Route::post('/{booking}/cancel', 'cancel')->name('cancel');
     });
+
+    Route::controller(\App\Http\Controllers\Admin\PaymentController::class)->prefix('payments')->name('payments.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/{payment}', 'show')->name('show');
+        Route::post('/{payment}/verify', 'verify')->name('verify');
+    });
 });
