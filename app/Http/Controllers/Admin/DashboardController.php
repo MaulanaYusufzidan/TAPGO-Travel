@@ -20,7 +20,7 @@ class DashboardController extends Controller
         $kpi = [
             'total_revenue' => Payment::where('status', 'paid')->sum('amount'),
             'total_bookings' => Booking::count(),
-            'total_customers' => User::where('role', 'customer')->count(),
+            'total_customers' => User::whereHas('role', fn ($q) => $q->where('slug', 'customer'))->count(),
             'total_trips' => Trip::count(),
             'pending_payments' => Payment::where('status', 'pending')->count(),
         ];
