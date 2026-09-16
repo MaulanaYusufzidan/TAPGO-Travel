@@ -1,5 +1,7 @@
 import './bootstrap';
 
-// Bootstrap 5 (framework) — JS bundle incl. Popper for dropdowns, tooltips, modals, etc.
-import * as coreui from 'bootstrap';
-window.bootstrap = coreui;
+// One Bootstrap 5 entrypoint for collapse, dropdown, and modal data APIs.
+// Importing bootstrap.bundle as well would attach duplicate event handlers.
+import * as bootstrap from 'bootstrap';
+
+window.bootstrap = bootstrap;

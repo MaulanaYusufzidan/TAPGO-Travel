@@ -4,10 +4,12 @@
 @section('meta_description', 'Jelajahi destinasi wisata terbaik di Indonesia bersama TAPGO TRAVEL.')
 
 @section('content')
-<div class="container py-5">
-    <h1 class="fw-bold mb-4">Destinations</h1>
+<div class="container py-5 py-lg-6">
+    <p class="eyebrow mb-2">Go beyond the familiar</p>
+    <h1 class="fw-bold mb-2">Discover extraordinary places</h1>
+    <p class="text-muted mb-4">From cultural heartlands to islands at the edge of the map.</p>
 
-    <form method="GET" action="{{ route('destinations.index') }}" class="row g-3 align-items-end mb-4">
+    <form method="GET" action="{{ route('destinations.index') }}" class="row g-3 align-items-end mb-5 p-3 p-lg-4 bg-light rounded-3">
         <div class="col-md-5">
             <label for="q" class="form-label small fw-semibold text-uppercase text-muted">Cari</label>
             <input type="text" name="q" id="q" class="form-control" placeholder="Nama atau lokasi..." value="{{ $filters['q'] ?? '' }}">
@@ -40,24 +42,11 @@
             <p class="lead">Tidak ada destinasi yang cocok dengan pencarianmu.</p>
         </div>
     @else
+        <p class="small text-muted mb-3">{{ $destinations->total() }} destinations found</p>
         <div class="row g-4">
             @foreach ($destinations as $destination)
                 <div class="col-md-4">
-                    <div class="card h-100 border-0">
-                        <div class="ratio ratio-4x3 bg-secondary-subtle rounded-top overflow-hidden">
-                            <img src="{{ asset('storage/' . $destination->hero_image) }}"
-                                 alt="{{ $destination->name }}" class="object-fit-cover">
-                        </div>
-                        <div class="card-body">
-                            @if ($destination->is_featured)
-                                <span class="badge bg-warning text-dark mb-2">Populer</span>
-                            @endif
-                            <h5 class="card-title fw-bold mb-1">{{ $destination->name }}</h5>
-                            <p class="text-muted small mb-2">{{ $destination->location }}</p>
-                            <p class="card-text small">{{ \Illuminate\Support\Str::limit($destination->description, 90) }}</p>
-                            <a href="{{ url('/destinations/' . $destination->slug) }}" class="btn btn-outline-primary btn-sm">Lihat Detail</a>
-                        </div>
-                    </div>
+                    <x-destination-card :destination="$destination" />
                 </div>
             @endforeach
         </div>

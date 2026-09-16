@@ -4,10 +4,12 @@
 @section('meta_description', 'Jelajahi paket perjalanan terbaik ke seluruh Indonesia bersama TAPGO TRAVEL.')
 
 @section('content')
-<div class="container py-5">
-    <h1 class="fw-bold mb-4">Trips</h1>
+<div class="container py-5 py-lg-6">
+    <p class="eyebrow mb-2">Find your next experience</p>
+    <h1 class="fw-bold mb-2">Explore trips across Indonesia</h1>
+    <p class="text-muted mb-4">Compare locally curated journeys and book when the timing feels right.</p>
 
-    <form method="GET" action="{{ route('trips.index') }}" class="row g-3 align-items-end mb-4">
+    <form method="GET" action="{{ route('trips.index') }}" class="row g-3 align-items-end mb-5 p-3 p-lg-4 bg-light rounded-3">
         <div class="col-md-3">
             <label for="q" class="form-label small fw-semibold text-uppercase text-muted">Cari</label>
             <input type="text" name="q" id="q" class="form-control" placeholder="Nama trip..." value="{{ $filters['q'] ?? '' }}">
@@ -50,33 +52,11 @@
             <p class="lead">Tidak ada trip yang cocok dengan pencarianmu.</p>
         </div>
     @else
+        <p class="small text-muted mb-3">{{ $trips->total() }} experiences found</p>
         <div class="row g-4">
             @foreach ($trips as $trip)
                 <div class="col-md-4">
-                    <div class="card h-100 border-0">
-                        <div class="ratio ratio-4x3 bg-secondary-subtle rounded-top overflow-hidden">
-                            @if ($trip->images->first())
-                                <img src="{{ asset('storage/' . $trip->images->first()->image_path) }}"
-                                     alt="{{ $trip->title }}" class="object-fit-cover">
-                            @endif
-                        </div>
-                        <div class="card-body">
-                            @if ($trip->is_featured)
-                                <span class="badge bg-warning text-dark mb-2">Populer</span>
-                            @endif
-                            <h5 class="card-title fw-bold mb-1">{{ $trip->title }}</h5>
-                            <p class="text-muted small mb-1">
-                                {{ $trip->destination->name }} &middot; {{ $trip->duration }}
-                            </p>
-                            <p class="small mb-2">
-                                &#9733; {{ number_format($trip->rating_avg, 1) }} ({{ $trip->reviews_count }} reviews)
-                            </p>
-                            <p class="fw-semibold text-primary mb-2">
-                                Rp {{ number_format($trip->base_price, 0, ',', '.') }}
-                            </p>
-                            <a href="{{ url('/trips/' . $trip->slug) }}" class="btn btn-outline-primary btn-sm">Lihat Detail</a>
-                        </div>
-                    </div>
+                    <x-trip-card :trip="$trip" />
                 </div>
             @endforeach
         </div>

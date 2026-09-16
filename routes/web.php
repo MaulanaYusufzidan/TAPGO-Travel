@@ -9,10 +9,28 @@ use App\Http\Controllers\DestinationController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\TripController;
+use App\Http\Controllers\PageController;
+use App\Models\Destination;
+use App\Models\Trip;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('home');
+    $featuredDestinations = collect();
+    $featuredTrips = collect();
+
+    // Keep the marketing page available during a temporary database outage.
+    // In normal operation these are populated from the existing marketplace data.
+    try {
+        $featuredDestinations = Destination::published()->featured()->take(6)->get();
+        $featuredTrips = Trip::with(['destination', 'images'])->published()->featured()->take(6)->get();
+    } catch (\Illuminate\Database\QueryException) {
+        // The view has intentional empty states for this condition.
+    }
+
+    return view('home', [
+        'featuredDestinations' => $featuredDestinations,
+        'featuredTrips' => $featuredTrips,
+    ]);
 })->name('home');
 
 Route::middleware('guest')->group(function () {
@@ -34,6 +52,14 @@ Route::get('/destinations', [DestinationController::class, 'index'])->name('dest
 Route::get('/destinations/{destination}', [DestinationController::class, 'show'])->name('destinations.show');
 Route::get('/trips', [TripController::class, 'index'])->name('trips.index');
 Route::get('/trips/{trip}', [TripController::class, 'show'])->name('trips.show');
+Route::get('/hotels', [PageController::class, 'hotels'])->name('hotels.index');
+Route::get('/flights', [PageController::class, 'flights'])->name('flights.index');
+Route::get('/flights/{id}', [PageController::class, 'flight'])->name('flights.show');
+Route::get('/blog', [PageController::class, 'blog'])->name('blog');
+Route::get('/about', [PageController::class, 'about'])->name('about');
+Route::get('/career', [PageController::class, 'career'])->name('career');
+Route::get('/contact', [PageController::class, 'contact'])->name('contact');
+Route::get('/profile', [PageController::class, 'profile'])->middleware('auth')->name('profile');
 
 Route::middleware('auth')->group(function () {
     Route::get('/bookings/create', [BookingController::class, 'create'])->name('bookings.create');

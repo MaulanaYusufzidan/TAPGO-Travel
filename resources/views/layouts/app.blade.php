@@ -24,7 +24,8 @@
 
     <link rel="icon" href="{{ asset('favicon.ico') }}">
 
-    @vite(['resources/css/app.css', 'resources/sass/app.scss', 'resources/js/app.js'])
+    {{-- Bootstrap SCSS is the sole global UI stylesheet; Tailwind's collapse utility conflicts with Bootstrap. --}}
+    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
     @stack('styles')
 </head>
 <body class="d-flex flex-column min-vh-100">

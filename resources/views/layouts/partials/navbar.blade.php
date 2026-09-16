@@ -1,73 +1,25 @@
-{{--
-    TAPGO TRAVEL — Navigation Component
-    Ref: PRD section 7 (Information Architecture) & section 9 (Homepage Requirements)
---}}
-<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+<nav class="navbar navbar-expand-xl tapgo-navbar sticky-top" aria-label="Main navigation">
     <div class="container">
-        <a class="navbar-brand fw-bold text-primary" href="{{ url('/') }}">
-            TAPGO TRAVEL
-        </a>
-
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#mainNavbar" aria-controls="mainNavbar"
-                aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
+        <a class="navbar-brand" href="{{ route('home') }}" aria-label="TAPGO Travel home"><span class="brand-mark">T</span><span>TAPGO <em>Travel</em></span></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Open navigation"><span class="navbar-toggler-icon"></span></button>
         <div class="collapse navbar-collapse" id="mainNavbar">
-            <ul class="navbar-nav mx-lg-auto">
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->is('/') ? 'active fw-semibold' : '' }}" href="{{ url('/') }}">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->is('destinations*') ? 'active fw-semibold' : '' }}" href="{{ url('/destinations') }}">Destinations</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->is('trips*') ? 'active fw-semibold' : '' }}" href="{{ url('/trips') }}">Trips</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->is('experiences*') ? 'active fw-semibold' : '' }}" href="{{ url('/experiences') }}">Experiences</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->is('travel-guide*') ? 'active fw-semibold' : '' }}" href="{{ url('/travel-guide') }}">Travel Guide</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->is('about*') ? 'active fw-semibold' : '' }}" href="{{ url('/about') }}">About</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->is('contact*') ? 'active fw-semibold' : '' }}" href="{{ url('/contact') }}">Contact</a>
-                </li>
+            <ul class="navbar-nav mx-xl-auto tapgo-nav-links">
+                <li class="nav-item"><a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">Home</a></li>
+                <li class="nav-item"><a class="nav-link {{ request()->routeIs('hotels.*') ? 'active' : '' }}" href="{{ route('hotels.index') }}">Hotels</a></li>
+                <li class="nav-item"><a class="nav-link {{ request()->routeIs('flights.*') ? 'active' : '' }}" href="{{ route('flights.index') }}">Flights</a></li>
+                <li class="nav-item"><a class="nav-link {{ request()->routeIs('destinations.*') ? 'active' : '' }}" href="{{ route('destinations.index') }}">Destinations</a></li>
+                <li class="nav-item"><a class="nav-link {{ request()->routeIs('blog') ? 'active' : '' }}" href="{{ route('blog') }}">Blog</a></li>
+                <li class="nav-item dropdown"><a class="nav-link dropdown-toggle {{ request()->routeIs('about', 'career', 'contact') ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">More</a><ul class="dropdown-menu"><li><a class="dropdown-item" href="{{ route('about') }}">About TAPGO</a></li><li><a class="dropdown-item" href="{{ route('career') }}">Careers</a></li><li><a class="dropdown-item" href="{{ route('contact') }}">Contact</a></li></ul></li>
             </ul>
-
-            <ul class="navbar-nav ms-lg-3 align-items-lg-center">
+            <div class="tapgo-nav-actions pt-3 pt-xl-0">
+                <div class="dropdown"><button class="nav-utility dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">EN</button><ul class="dropdown-menu dropdown-menu-end"><li><button class="dropdown-item active" type="button">English</button></li><li><button class="dropdown-item" type="button">Bahasa Indonesia</button></li></ul></div>
+                <div class="dropdown"><button class="nav-utility dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">IDR</button><ul class="dropdown-menu dropdown-menu-end"><li><button class="dropdown-item active" type="button">IDR — Rupiah</button></li><li><button class="dropdown-item" type="button">USD — US Dollar</button></li></ul></div>
                 @guest
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url('/login') }}">Login</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="btn btn-primary rounded-pill px-3 ms-lg-2" href="{{ url('/register') }}">Register</a>
-                    </li>
+                    <a class="nav-login" href="{{ route('login') }}">Login</a><a class="btn btn-primary tapgo-signup" href="{{ route('register') }}">Sign up</a>
                 @else
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="accountDropdown"
-                           role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            {{ Auth::user()->name ?? 'Account' }}
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
-                            <li><a class="dropdown-item" href="{{ url('/account') }}">Dashboard</a></li>
-                            <li><a class="dropdown-item" href="{{ url('/account/bookings') }}">My Bookings</a></li>
-                            <li><a class="dropdown-item" href="{{ url('/account/wishlist') }}">Wishlist</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <form method="POST" action="{{ url('/logout') }}">
-                                    @csrf
-                                    <button type="submit" class="dropdown-item">Logout</button>
-                                </form>
-                            </li>
-                        </ul>
-                    </li>
+                    <div class="dropdown"><button class="account-toggle dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"><span class="account-avatar">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span><span class="account-name">{{ Auth::user()->name }}</span></button><ul class="dropdown-menu dropdown-menu-end account-menu"><li class="account-menu__head"><strong>{{ Auth::user()->name }}</strong><span>{{ Auth::user()->email }}</span></li><li><hr class="dropdown-divider"></li><li><a class="dropdown-item" href="{{ route('profile') }}">My Profile</a></li><li><a class="dropdown-item" href="{{ route('profile', ['tab' => 'bookings']) }}">My Bookings</a></li><li><a class="dropdown-item" href="{{ route('profile', ['tab' => 'saved']) }}">Saved Places</a></li><li><a class="dropdown-item" href="{{ route('profile', ['tab' => 'settings']) }}">Settings</a></li><li><hr class="dropdown-divider"></li><li><form method="POST" action="{{ route('logout') }}">@csrf<button type="submit" class="dropdown-item text-danger">Logout</button></form></li></ul></div>
                 @endguest
-            </ul>
+            </div>
         </div>
     </div>
 </nav>
