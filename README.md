@@ -1,66 +1,230 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# TAPGO Travel ✈️
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+> **Travel & Tour Booking Platform — Currently in Development**
 
-## About Laravel
+TAPGO Travel adalah project website **travel dan tour booking** yang sedang dikembangkan sebagai platform untuk membantu pengguna menemukan dan merencanakan perjalanan dengan pengalaman browsing yang modern, informatif, dan mudah digunakan.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Project ini dibangun sebagai bagian dari pengembangan portfolio **Web Development**, dengan fokus pada frontend experience, responsive design, dan struktur aplikasi yang scalable.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 🚧 Project Status
 
-## Learning Laravel
+**TAPGO Travel is currently under development.**
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Beberapa bagian website masih dalam proses pengerjaan, termasuk penyempurnaan UI/UX, halaman destinasi, detail perjalanan, dan fitur booking.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+> ⚠️ Karena project masih dalam tahap development, beberapa fitur dan halaman mungkin belum tersedia atau masih mengalami perubahan.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-## Laravel Sponsors
+## ✨ Planned Features
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Beberapa fitur yang direncanakan untuk TAPGO Travel:
 
-### Premium Partners
+* 🏠 Modern travel homepage
+* 🔎 Search destinations and travel packages
+* 🗺️ Explore travel destinations
+* 🏨 Tour & travel package listings
+* 📄 Travel package detail pages
+* 📅 Booking flow
+* 👤 User account & profile
+* ❤️ Wishlist / favorite destinations
+* ⭐ Reviews & ratings
+* 📱 Fully responsive interface
+* 🎨 Modern and intuitive UI/UX
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+> Fitur dapat berubah selama proses pengembangan.
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## 🎨 Design Direction
 
-## Code of Conduct
+TAPGO Travel mengambil inspirasi dari beberapa modern travel booking websites, terutama dalam hal:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+* Clean travel-focused layout
+* Destination discovery
+* Search and filtering experience
+* Large visual imagery
+* Card-based travel listings
+* Clear booking flow
+* Responsive design
+* Modern typography and spacing
 
-## Security Vulnerabilities
+Design akan dikembangkan kembali dengan identitas **TAPGO Travel** dan tidak dimaksudkan sebagai salinan langsung dari website referensi.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
 
-## License
+## 🛠️ Tech Stack
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Project ini menggunakan beberapa teknologi berikut:
+
+### Frontend
+
+* **Next.js**
+* **TypeScript**
+* **React**
+* **Tailwind CSS**
+* **Framer Motion**
+* **Lucide React**
+
+### Development Tools
+
+* **Git**
+* **GitHub**
+* **Visual Studio Code**
+* **ESLint**
+
+---
+
+## 📂 Project Structure
+
+Struktur project mengikuti pendekatan modular menggunakan Next.js App Router.
+
+```text
+TAPGO-Travel/
+├── app/
+│   ├── page.tsx
+│   ├── layout.tsx
+│   └── globals.css
+│
+├── components/
+│   ├── Navbar/
+│   ├── Hero/
+│   ├── Destination/
+│   ├── Tour/
+│   ├── Footer/
+│   └── ...
+│
+├── data/
+│   └── ...
+│
+├── public/
+│   ├── images/
+│   └── ...
+│
+├── lib/
+│   └── ...
+│
+├── package.json
+├── tsconfig.json
+└── README.md
+```
+
+Struktur dapat berubah mengikuti perkembangan project.
+
+---
+
+## 🚀 Getting Started
+
+Clone repository:
+
+```bash
+git clone https://github.com/MaulanaYusufzidan/TAPGO-Travel.git
+```
+
+Masuk ke directory project:
+
+```bash
+cd TAPGO-Travel
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Jalankan development server:
+
+```bash
+npm run dev
+```
+
+Kemudian buka:
+
+```text
+http://localhost:3000
+```
+
+---
+
+## 🧩 Development Roadmap
+
+### Phase 1 — Foundation
+
+* [x] Project setup
+* [x] Next.js configuration
+* [x] Tailwind CSS setup
+* [x] Initial component structure
+
+### Phase 2 — UI/UX
+
+* [ ] Homepage
+* [ ] Navigation
+* [ ] Hero section
+* [ ] Destination section
+* [ ] Tour/package cards
+* [ ] Responsive layout
+* [ ] Animations & interactions
+
+### Phase 3 — Travel Experience
+
+* [ ] Destination exploration
+* [ ] Search
+* [ ] Filtering
+* [ ] Package detail
+* [ ] Booking interface
+
+### Phase 4 — Application Features
+
+* [ ] Authentication
+* [ ] User profile
+* [ ] Wishlist
+* [ ] Reviews
+* [ ] Booking management
+
+### Phase 5 — Finalization
+
+* [ ] Performance optimization
+* [ ] Accessibility improvements
+* [ ] Responsive testing
+* [ ] Production deployment
+
+---
+
+## 📸 Preview
+
+> **Preview will be added once the main interface is completed.**
+
+The current version is still actively being developed.
+
+---
+
+## 🌐 Repository
+
+**GitHub:**
+https://github.com/MaulanaYusufzidan/TAPGO-Travel
+
+---
+
+## 👨‍💻 Developer
+
+**Maulana Yusuf Zidan**
+
+Information Systems Student
+Universitas Bina Sarana Informatika
+
+Focused on:
+
+* Web Development
+* Full-Stack Development
+* UI/UX Design
+
+---
+
+## 📄 License
+
+This project is currently developed as a personal portfolio and learning project.
+
+The project structure, design, and implementation are subject to change during development.
