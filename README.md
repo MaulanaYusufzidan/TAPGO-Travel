@@ -2,149 +2,249 @@
 
 > **Travel & Tour Booking Platform — Currently in Development**
 
-TAPGO Travel adalah project website **travel dan tour booking** yang sedang dikembangkan sebagai platform untuk membantu pengguna menemukan dan merencanakan perjalanan dengan pengalaman browsing yang modern, informatif, dan mudah digunakan.
+TAPGO Travel adalah platform **travel & tour booking** berbasis web yang dikembangkan untuk membantu pengguna menemukan destinasi, melihat paket perjalanan, mendapatkan informasi perjalanan, dan melakukan proses pemesanan melalui satu platform.
 
-Project ini dibangun sebagai bagian dari pengembangan portfolio **Web Development**, dengan fokus pada frontend experience, responsive design, dan struktur aplikasi yang scalable.
+Project ini dikembangkan sebagai bagian dari portfolio **Web Development**, dengan fokus pada pengembangan aplikasi web, database management, authentication, booking workflow, dan responsive user interface.
 
 ---
 
 ## 🚧 Project Status
 
-**TAPGO Travel is currently under development.**
+**TAPGO Travel is currently under active development.**
 
-Beberapa bagian website masih dalam proses pengerjaan, termasuk penyempurnaan UI/UX, halaman destinasi, detail perjalanan, dan fitur booking.
+Pengembangan dilakukan secara bertahap mulai dari struktur aplikasi, authentication, destination management, travel packages, booking system, hingga payment integration.
 
-> ⚠️ Karena project masih dalam tahap development, beberapa fitur dan halaman mungkin belum tersedia atau masih mengalami perubahan.
+> ⚠️ Beberapa fitur dan halaman masih dalam proses pengembangan dan dapat mengalami perubahan.
 
 ---
 
-## ✨ Planned Features
+## ✨ Features
 
-Beberapa fitur yang direncanakan untuk TAPGO Travel:
+Fitur yang dikembangkan dalam TAPGO Travel meliputi:
 
-* 🏠 Modern travel homepage
-* 🔎 Search destinations and travel packages
-* 🗺️ Explore travel destinations
-* 🏨 Tour & travel package listings
+* 🏠 Travel-focused homepage
+* 🔎 Destination & travel package search
+* 🗺️ Destination exploration
+* 🏨 Travel & tour package listings
 * 📄 Travel package detail pages
-* 📅 Booking flow
-* 👤 User account & profile
+* 📅 Booking system
+* 👤 User authentication & profile
 * ❤️ Wishlist / favorite destinations
 * ⭐ Reviews & ratings
-* 📱 Fully responsive interface
-* 🎨 Modern and intuitive UI/UX
+* 💳 Payment integration
+* 🔔 Application notifications
+* 🛡️ Role & permission management
+* 📱 Responsive interface
+* 🎨 Modern travel-focused UI/UX
 
-> Fitur dapat berubah selama proses pengembangan.
+Fitur dapat terus bertambah dan berubah selama proses development.
 
 ---
 
 ## 🎨 Design Direction
 
-TAPGO Travel mengambil inspirasi dari beberapa modern travel booking websites, terutama dalam hal:
+TAPGO Travel menggunakan pendekatan desain **modern travel booking platform** dengan fokus pada pengalaman pengguna saat mencari dan mengeksplorasi perjalanan.
 
-* Clean travel-focused layout
+Design direction meliputi:
+
+* Clean and spacious layout
+* Large destination imagery
 * Destination discovery
-* Search and filtering experience
-* Large visual imagery
-* Card-based travel listings
-* Clear booking flow
+* Search & filtering experience
+* Travel package cards
+* Clear information hierarchy
+* Intuitive navigation
 * Responsive design
-* Modern typography and spacing
+* Consistent typography and spacing
+* Smooth user interactions
 
-Design akan dikembangkan kembali dengan identitas **TAPGO Travel** dan tidak dimaksudkan sebagai salinan langsung dari website referensi.
+TAPGO Travel menggunakan beberapa website travel modern sebagai **referensi visual dan user experience**, kemudian dikembangkan kembali dengan identitas dan struktur aplikasi TAPGO Travel sendiri.
 
 ---
 
 ## 🛠️ Tech Stack
 
-Project ini menggunakan beberapa teknologi berikut:
+### Backend
+
+* **Laravel 12**
+* **PHP 8.2+**
+* **Eloquent ORM**
+* **Laravel Breeze**
+* **Spatie Laravel Permission**
 
 ### Frontend
 
-* **Next.js**
-* **TypeScript**
-* **React**
-* **Tailwind CSS**
-* **Framer Motion**
-* **Lucide React**
+* **Blade**
+* **Bootstrap 5**
+* **SCSS / Sass**
+* **JavaScript**
+* **Alpine.js**
+* **Vite**
+
+### Database & Services
+
+* **MySQL**
+* **Midtrans Sandbox**
+* **Laravel Storage**
+* **Laravel Notifications**
 
 ### Development Tools
 
 * **Git**
 * **GitHub**
 * **Visual Studio Code**
-* **ESLint**
+* **XAMPP**
 
 ---
 
 ## 📂 Project Structure
 
-Struktur project mengikuti pendekatan modular menggunakan Next.js App Router.
+TAPGO Travel menggunakan struktur aplikasi **Laravel** dengan pendekatan modular untuk memisahkan logic, presentation layer, database, dan asset frontend.
 
 ```text
 TAPGO-Travel/
 ├── app/
-│   ├── page.tsx
-│   ├── layout.tsx
-│   └── globals.css
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   ├── Middleware/
+│   │   └── Requests/
+│   │
+│   ├── Models/
+│   ├── Services/
+│   ├── Jobs/
+│   ├── Events/
+│   └── Notifications/
 │
-├── components/
-│   ├── Navbar/
-│   ├── Hero/
-│   ├── Destination/
-│   ├── Tour/
-│   ├── Footer/
-│   └── ...
+├── database/
+│   ├── migrations/
+│   ├── seeders/
+│   └── factories/
 │
-├── data/
-│   └── ...
+├── resources/
+│   ├── views/
+│   │   ├── layouts/
+│   │   ├── components/
+│   │   └── pages/
+│   │
+│   ├── css/
+│   └── js/
+│
+├── routes/
+│   ├── web.php
+│   └── api.php
 │
 ├── public/
 │   ├── images/
-│   └── ...
+│   └── assets/
 │
-├── lib/
-│   └── ...
-│
+├── storage/
+├── tests/
+├── composer.json
 ├── package.json
-├── tsconfig.json
+├── vite.config.js
 └── README.md
 ```
 
-Struktur dapat berubah mengikuti perkembangan project.
+> Struktur folder dapat berubah mengikuti perkembangan aplikasi.
 
 ---
 
 ## 🚀 Getting Started
 
-Clone repository:
+### Prerequisites
+
+Pastikan environment berikut sudah tersedia:
+
+* PHP 8.2+
+* Composer
+* Node.js & npm
+* MySQL
+* XAMPP atau local PHP development environment
+
+### 1. Clone Repository
 
 ```bash
 git clone https://github.com/MaulanaYusufzidan/TAPGO-Travel.git
 ```
 
-Masuk ke directory project:
+### 2. Navigate to Project
 
 ```bash
 cd TAPGO-Travel
 ```
 
-Install dependencies:
+### 3. Install PHP Dependencies
+
+```bash
+composer install
+```
+
+### 4. Install Frontend Dependencies
 
 ```bash
 npm install
 ```
 
-Jalankan development server:
+### 5. Setup Environment
+
+Copy file `.env.example` menjadi `.env`:
+
+```bash
+cp .env.example .env
+```
+
+Generate application key:
+
+```bash
+php artisan key:generate
+```
+
+### 6. Configure Database
+
+Buat database MySQL, kemudian sesuaikan konfigurasi pada file `.env`:
+
+```env
+DB_DATABASE=tapgo_travel
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+### 7. Run Database Migration
+
+```bash
+php artisan migrate
+```
+
+Jika project menyediakan seed data:
+
+```bash
+php artisan db:seed
+```
+
+atau:
+
+```bash
+php artisan migrate --seed
+```
+
+### 8. Build Frontend Assets
+
+Untuk development:
 
 ```bash
 npm run dev
 ```
 
+### 9. Run Laravel Server
+
+```bash
+php artisan serve
+```
+
 Kemudian buka:
 
 ```text
-http://localhost:3000
+http://127.0.0.1:8000
 ```
 
 ---
@@ -153,41 +253,54 @@ http://localhost:3000
 
 ### Phase 1 — Foundation
 
-* [x] Project setup
-* [x] Next.js configuration
-* [x] Tailwind CSS setup
-* [x] Initial component structure
+* [x] Laravel project setup
+* [x] Database structure
+* [x] Authentication foundation
+* [x] Frontend asset configuration
+* [x] Initial application structure
 
-### Phase 2 — UI/UX
+### Phase 2 — Travel Interface
 
 * [ ] Homepage
 * [ ] Navigation
 * [ ] Hero section
 * [ ] Destination section
-* [ ] Tour/package cards
-* [ ] Responsive layout
-* [ ] Animations & interactions
+* [ ] Travel package cards
+* [ ] Responsive interface
+* [ ] Interactive components
 
-### Phase 3 — Travel Experience
+### Phase 3 — Travel Management
 
-* [ ] Destination exploration
-* [ ] Search
+* [ ] Destination management
+* [ ] Travel package management
+* [ ] Search functionality
 * [ ] Filtering
 * [ ] Package detail
-* [ ] Booking interface
+* [ ] Booking workflow
 
-### Phase 4 — Application Features
+### Phase 4 — User & Booking
 
-* [ ] Authentication
 * [ ] User profile
 * [ ] Wishlist
-* [ ] Reviews
+* [ ] Reviews & ratings
 * [ ] Booking management
+* [ ] Payment integration
+* [ ] Booking notifications
 
-### Phase 5 — Finalization
+### Phase 5 — Administration
 
+* [ ] Admin dashboard
+* [ ] User management
+* [ ] Destination management
+* [ ] Package management
+* [ ] Booking management
+* [ ] Role & permission management
+
+### Phase 6 — Finalization
+
+* [ ] Validation & error handling
 * [ ] Performance optimization
-* [ ] Accessibility improvements
+* [ ] Security improvements
 * [ ] Responsive testing
 * [ ] Production deployment
 
@@ -195,36 +308,39 @@ http://localhost:3000
 
 ## 📸 Preview
 
-> **Preview will be added once the main interface is completed.**
+> **Preview will be added as the main interface reaches completion.**
 
-The current version is still actively being developed.
+TAPGO Travel is currently under active development, and screenshots will be added once the primary interface and booking experience are ready.
 
 ---
 
 ## 🌐 Repository
 
-**GitHub:**
-https://github.com/MaulanaYusufzidan/TAPGO-Travel
+**GitHub Repository**
+
+[MaulanaYusufzidan/TAPGO-Travel](https://github.com/MaulanaYusufzidan/TAPGO-Travel?utm_source=chatgpt.com)
 
 ---
 
 ## 👨‍💻 Developer
 
-**Maulana Yusuf Zidan**
+### Maulana Yusuf Zidan
 
-Information Systems Student
+**Information Systems Student**
 Universitas Bina Sarana Informatika
 
-Focused on:
+Interested in:
 
 * Web Development
 * Full-Stack Development
 * UI/UX Design
+* Database Management
+* Modern Web Applications
 
 ---
 
 ## 📄 License
 
-This project is currently developed as a personal portfolio and learning project.
+TAPGO Travel is developed as a **personal portfolio and learning project**.
 
-The project structure, design, and implementation are subject to change during development.
+The design, structure, features, and implementation may change throughout the development process.
