@@ -53,12 +53,14 @@ Route::get('/destinations/{destination}', [DestinationController::class, 'show']
 Route::get('/trips', [TripController::class, 'index'])->name('trips.index');
 Route::get('/trips/{trip}', [TripController::class, 'show'])->name('trips.show');
 Route::get('/hotels', [PageController::class, 'hotels'])->name('hotels.index');
+Route::get('/hotels/{slug}', [PageController::class, 'hotel'])->name('hotels.show');
 Route::get('/flights', [PageController::class, 'flights'])->name('flights.index');
 Route::get('/flights/{id}', [PageController::class, 'flight'])->name('flights.show');
 Route::get('/blog', [PageController::class, 'blog'])->name('blog');
 Route::get('/about', [PageController::class, 'about'])->name('about');
 Route::get('/career', [PageController::class, 'career'])->name('career');
 Route::get('/contact', [PageController::class, 'contact'])->name('contact');
+Route::post('/contact', [PageController::class, 'submitContact'])->name('contact.submit');
 Route::get('/profile', [PageController::class, 'profile'])->middleware('auth')->name('profile');
 
 Route::middleware('auth')->group(function () {
