@@ -42,6 +42,14 @@ class DestinationController extends Controller
 
         $destination->load('images');
 
+        $trips = \App\Models\Trip::query()
+            ->with(['images', 'destination'])
+            ->published()
+            ->where('destination_id', $destination->id)
+            ->orderByDesc('is_featured')
+            ->limit(6)
+            ->get();
+
         $related = Destination::query()
             ->published()
             ->where('id', '!=', $destination->id)
@@ -51,6 +59,7 @@ class DestinationController extends Controller
 
         return view('destinations.show', [
             'destination' => $destination,
+            'trips' => $trips,
             'related' => $related,
         ]);
     }

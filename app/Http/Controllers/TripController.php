@@ -54,9 +54,18 @@ class TripController extends Controller
             ->orderBy('date')
             ->get();
 
+        $related = Trip::query()
+            ->with(['destination', 'images'])
+            ->published()
+            ->where('id', '!=', $trip->id)
+            ->where('destination_id', $trip->destination_id)
+            ->limit(3)
+            ->get();
+
         return view('trips.show', [
             'trip' => $trip,
             'schedules' => $schedules,
+            'related' => $related,
         ]);
     }
 }

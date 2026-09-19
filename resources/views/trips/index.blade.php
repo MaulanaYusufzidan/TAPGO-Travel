@@ -4,66 +4,105 @@
 @section('meta_description', 'Jelajahi paket perjalanan terbaik ke seluruh Indonesia bersama TAPGO TRAVEL.')
 
 @section('content')
-<div class="container py-5 py-lg-6">
-    <p class="eyebrow mb-2">Find your next experience</p>
-    <h1 class="fw-bold mb-2">Explore trips across Indonesia</h1>
-    <p class="text-muted mb-4">Compare locally curated journeys and book when the timing feels right.</p>
-
-    <form method="GET" action="{{ route('trips.index') }}" class="row g-3 align-items-end mb-5 p-3 p-lg-4 bg-light rounded-3">
-        <div class="col-md-3">
-            <label for="q" class="form-label small fw-semibold text-uppercase text-muted">Cari</label>
-            <input type="text" name="q" id="q" class="form-control" placeholder="Nama trip..." value="{{ $filters['q'] ?? '' }}">
+<main class="marketplace-page">
+<div class="container">
+    <x-breadcrumb current="Trips" />
+    <div class="page-title-row">
+        <div>
+            <h1>Explore trips across Indonesia</h1>
+            <p>Compare locally curated journeys and book when the timing feels right.</p>
         </div>
-        <div class="col-md-2">
-            <label for="destination" class="form-label small fw-semibold text-uppercase text-muted">Destinasi</label>
+    </div>
+
+    <form method="GET" action="{{ route('trips.index') }}" class="compact-search row g-2 align-items-end">
+        <div class="col-md-4">
+            <label for="q">Search</label>
+            <input type="text" name="q" id="q" class="form-control" placeholder="Trip name..." value="{{ $filters['q'] ?? '' }}">
+        </div>
+        <div class="col-md-3">
+            <label for="destination">Destination</label>
             <select name="destination" id="destination" class="form-select">
-                <option value="">Semua</option>
+                <option value="">All destinations</option>
                 @foreach ($destinations as $d)
                     <option value="{{ $d->slug }}" @selected(($filters['destination'] ?? '') === $d->slug)>{{ $d->name }}</option>
                 @endforeach
             </select>
         </div>
-        <div class="col-md-2">
-            <label for="category" class="form-label small fw-semibold text-uppercase text-muted">Kategori</label>
-            <select name="category" id="category" class="form-select">
-                <option value="">Semua</option>
-                @foreach ($categories as $c)
-                    <option value="{{ $c->slug }}" @selected(($filters['category'] ?? '') === $c->slug)>{{ $c->name }}</option>
-                @endforeach
-            </select>
-        </div>
-        <div class="col-md-2">
-            <label for="sort" class="form-label small fw-semibold text-uppercase text-muted">Urutkan</label>
+        <div class="col-md-3">
+            <label for="sort">Sort by</label>
             <select name="sort" id="sort" class="form-select">
-                <option value="recommended" @selected(($filters['sort'] ?? 'recommended') === 'recommended')>Rekomendasi</option>
-                <option value="price_asc" @selected(($filters['sort'] ?? '') === 'price_asc')>Harga Terendah</option>
-                <option value="price_desc" @selected(($filters['sort'] ?? '') === 'price_desc')>Harga Tertinggi</option>
-                <option value="rating" @selected(($filters['sort'] ?? '') === 'rating')>Rating</option>
-                <option value="popularity" @selected(($filters['sort'] ?? '') === 'popularity')>Popularitas</option>
+                <option value="recommended" @selected(($filters['sort'] ?? 'recommended') === 'recommended')>Recommended</option>
+                <option value="price_asc" @selected(($filters['sort'] ?? '') === 'price_asc')>Price: low to high</option>
+                <option value="price_desc" @selected(($filters['sort'] ?? '') === 'price_desc')>Price: high to low</option>
+                <option value="rating" @selected(($filters['sort'] ?? '') === 'rating')>Guest rating</option>
+                <option value="popularity" @selected(($filters['sort'] ?? '') === 'popularity')>Popularity</option>
             </select>
         </div>
-        <div class="col-md-3 d-grid">
-            <button type="submit" class="btn btn-primary">Terapkan</button>
+        <div class="col-md-2 d-grid">
+            <button type="submit" class="btn btn-warning">🔍 Search</button>
         </div>
     </form>
 
-    @if ($trips->isEmpty())
-        <div class="text-center py-5">
-            <p class="lead">Tidak ada trip yang cocok dengan pencarianmu.</p>
-        </div>
-    @else
-        <p class="small text-muted mb-3">{{ $trips->total() }} experiences found</p>
-        <div class="row g-4">
-            @foreach ($trips as $trip)
-                <div class="col-md-4">
-                    <x-trip-card :trip="$trip" />
+    <div class="row g-4">
+        <div class="col-lg-3">
+            <aside class="filter-sidebar">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <strong>Filter by</strong>
+                    <a href="{{ route('trips.index') }}" class="btn btn-link btn-sm p-0">Clear all</a>
                 </div>
-            @endforeach
+                <div class="filter-group">
+                    <h3>Category</h3>
+                    @foreach ($categories as $c)
+                        <label>
+                            <input type="radio" name="category" form="trip-filter-form" value="{{ $c->slug }}" @checked(($filters['category'] ?? '') === $c->slug) onchange="this.form.requestSubmit()">
+                            {{ $c->name }}
+                        </label>
+                    @endforeach
+                </div>
+                <div class="filter-group">
+                    <h3>Price range (Rp)</h3>
+                    <form id="trip-filter-form" method="GET" action="{{ route('trips.index') }}" class="d-flex gap-2">
+                        <input type="hidden" name="q" value="{{ $filters['q'] ?? '' }}">
+                        <input type="hidden" name="destination" value="{{ $filters['destination'] ?? '' }}">
+                        <input type="hidden" name="sort" value="{{ $filters['sort'] ?? '' }}">
+                        <input class="form-control form-control-sm" type="number" name="price_min" placeholder="Min" value="{{ $filters['price_min'] ?? '' }}">
+                        <input class="form-control form-control-sm" type="number" name="price_max" placeholder="Max" value="{{ $filters['price_max'] ?? '' }}">
+                    </form>
+                    <button type="submit" form="trip-filter-form" class="btn btn-outline-primary btn-sm mt-2 w-100">Apply</button>
+                </div>
+                <div class="filter-group">
+                    <h3>Guest rating</h3>
+                    @foreach (['4.5+','4+','3.5+','3+'] as $r)
+                        <label><input type="checkbox" disabled> {{ $r }} stars</label>
+                    @endforeach
+                </div>
+            </aside>
         </div>
 
-        <div class="mt-5">
-            {{ $trips->links() }}
+        <div class="col-lg-9">
+            <div class="results-toolbar">
+                <span><strong>{{ $trips->total() }} trips found</strong></span>
+            </div>
+
+            @if ($trips->isEmpty())
+                <div class="text-center py-5">
+                    <p class="lead">No trips match your search yet.</p>
+                </div>
+            @else
+                <div class="row g-4">
+                    @foreach ($trips as $trip)
+                        <div class="col-sm-6 col-xl-4">
+                            <x-trip-card :trip="$trip" />
+                        </div>
+                    @endforeach
+                </div>
+
+                <div class="mt-5 d-flex justify-content-center">
+                    {{ $trips->onEachSide(1)->links() }}
+                </div>
+            @endif
         </div>
-    @endif
+    </div>
 </div>
+</main>
 @endsection

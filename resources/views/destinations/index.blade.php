@@ -4,56 +4,92 @@
 @section('meta_description', 'Jelajahi destinasi wisata terbaik di Indonesia bersama TAPGO TRAVEL.')
 
 @section('content')
-<div class="container py-5 py-lg-6">
-    <p class="eyebrow mb-2">Go beyond the familiar</p>
-    <h1 class="fw-bold mb-2">Discover extraordinary places</h1>
-    <p class="text-muted mb-4">From cultural heartlands to islands at the edge of the map.</p>
+<main class="marketplace-page">
+<div class="container">
+    <x-breadcrumb current="Destinations" />
+    <div class="page-title-row">
+        <div>
+            <h1>Discover extraordinary places</h1>
+            <p>From cultural heartlands to islands at the edge of the map.</p>
+        </div>
+    </div>
 
-    <form method="GET" action="{{ route('destinations.index') }}" class="row g-3 align-items-end mb-5 p-3 p-lg-4 bg-light rounded-3">
+    <form method="GET" action="{{ route('destinations.index') }}" class="compact-search row g-2 align-items-end">
         <div class="col-md-5">
-            <label for="q" class="form-label small fw-semibold text-uppercase text-muted">Cari</label>
-            <input type="text" name="q" id="q" class="form-control" placeholder="Nama atau lokasi..." value="{{ $filters['q'] ?? '' }}">
+            <label for="q">Search</label>
+            <input type="text" name="q" id="q" class="form-control" placeholder="Name or location..." value="{{ $filters['q'] ?? '' }}">
         </div>
         <div class="col-md-3">
-            <label for="location" class="form-label small fw-semibold text-uppercase text-muted">Lokasi</label>
+            <label for="sort">Sort by</label>
+            <select name="sort" id="sort" class="form-select">
+                <option value="recommended" @selected(($filters['sort'] ?? 'recommended') === 'recommended')>Recommended</option>
+                <option value="name_asc" @selected(($filters['sort'] ?? '') === 'name_asc')>Name A-Z</option>
+                <option value="name_desc" @selected(($filters['sort'] ?? '') === 'name_desc')>Name Z-A</option>
+                <option value="newest" @selected(($filters['sort'] ?? '') === 'newest')>Newest</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label for="location">Location</label>
             <select name="location" id="location" class="form-select">
-                <option value="">Semua Lokasi</option>
+                <option value="">All</option>
                 @foreach ($locations as $loc)
                     <option value="{{ $loc }}" @selected(($filters['location'] ?? '') === $loc)>{{ $loc }}</option>
                 @endforeach
             </select>
         </div>
-        <div class="col-md-2">
-            <label for="sort" class="form-label small fw-semibold text-uppercase text-muted">Urutkan</label>
-            <select name="sort" id="sort" class="form-select">
-                <option value="recommended" @selected(($filters['sort'] ?? 'recommended') === 'recommended')>Rekomendasi</option>
-                <option value="name_asc" @selected(($filters['sort'] ?? '') === 'name_asc')>Nama A-Z</option>
-                <option value="name_desc" @selected(($filters['sort'] ?? '') === 'name_desc')>Nama Z-A</option>
-                <option value="newest" @selected(($filters['sort'] ?? '') === 'newest')>Terbaru</option>
-            </select>
-        </div>
         <div class="col-md-2 d-grid">
-            <button type="submit" class="btn btn-primary">Terapkan</button>
+            <button type="submit" class="btn btn-warning">🔍 Search</button>
         </div>
     </form>
 
-    @if ($destinations->isEmpty())
-        <div class="text-center py-5">
-            <p class="lead">Tidak ada destinasi yang cocok dengan pencarianmu.</p>
-        </div>
-    @else
-        <p class="small text-muted mb-3">{{ $destinations->total() }} destinations found</p>
-        <div class="row g-4">
-            @foreach ($destinations as $destination)
-                <div class="col-md-4">
-                    <x-destination-card :destination="$destination" />
+    <div class="row g-4">
+        <div class="col-lg-3">
+            <aside class="filter-sidebar">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <strong>Filter by</strong>
+                    <a href="{{ route('destinations.index') }}" class="btn btn-link btn-sm p-0">Clear all</a>
                 </div>
-            @endforeach
+                <div class="filter-group">
+                    <h3>Location</h3>
+                    @foreach ($locations as $loc)
+                        <label>
+                            <a href="{{ route('destinations.index', array_merge($filters, ['location' => $loc])) }}"
+                               class="text-decoration-none {{ ($filters['location'] ?? '') === $loc ? 'fw-bold text-primary' : 'text-body' }}">
+                                {{ $loc }}
+                            </a>
+                        </label>
+                    @endforeach
+                </div>
+                <div class="filter-group">
+                    <h3>Featured</h3>
+                    <p class="small text-muted mb-0">Handpicked destinations are marked with a badge across the listing and homepage.</p>
+                </div>
+            </aside>
         </div>
 
-        <div class="mt-5">
-            {{ $destinations->links() }}
+        <div class="col-lg-9">
+            @if ($destinations->isEmpty())
+                <div class="text-center py-5">
+                    <p class="lead">No destinations match your search yet.</p>
+                </div>
+            @else
+                <div class="results-toolbar">
+                    <span><strong>{{ $destinations->total() }} destinations found</strong></span>
+                </div>
+                <div class="row g-4">
+                    @foreach ($destinations as $destination)
+                        <div class="col-sm-6 col-xl-4">
+                            <x-destination-card :destination="$destination" />
+                        </div>
+                    @endforeach
+                </div>
+
+                <div class="mt-5 d-flex justify-content-center">
+                    {{ $destinations->onEachSide(1)->links() }}
+                </div>
+            @endif
         </div>
-    @endif
+    </div>
 </div>
+</main>
 @endsection
