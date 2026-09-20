@@ -25,15 +25,27 @@ class DashboardController extends Controller
             'pending_payments' => Payment::where('status', 'pending')->count(),
         ];
 
+        $monthFormat = match (DB::connection()->getDriverName()) {
+            'sqlite' => "strftime('%Y-%m', paid_at)",
+            'pgsql' => "to_char(paid_at, 'YYYY-MM')",
+            default => "DATE_FORMAT(paid_at, '%Y-%m')",
+        };
+
         $monthlyRevenue = Payment::query()
             ->where('status', 'paid')
-            ->selectRaw("DATE_FORMAT(paid_at, '%Y-%m') as month, SUM(amount) as total")
+            ->selectRaw("{$monthFormat} as month, SUM(amount) as total")
             ->groupBy('month')
             ->orderBy('month')
             ->get();
 
+        $bookingMonthFormat = match (DB::connection()->getDriverName()) {
+            'sqlite' => "strftime('%Y-%m', created_at)",
+            'pgsql' => "to_char(created_at, 'YYYY-MM')",
+            default => "DATE_FORMAT(created_at, '%Y-%m')",
+        };
+
         $monthlyBooking = Booking::query()
-            ->selectRaw("DATE_FORMAT(created_at, '%Y-%m') as month, COUNT(*) as total")
+            ->selectRaw("{$bookingMonthFormat} as month, COUNT(*) as total")
             ->groupBy('month')
             ->orderBy('month')
             ->get();
