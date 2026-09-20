@@ -62,6 +62,8 @@ Route::get('/career', [PageController::class, 'career'])->name('career');
 Route::get('/contact', [PageController::class, 'contact'])->name('contact');
 Route::post('/contact', [PageController::class, 'submitContact'])->name('contact.submit');
 Route::get('/profile', [PageController::class, 'profile'])->middleware('auth')->name('profile');
+Route::patch('/profile', [PageController::class, 'updateProfile'])->middleware('auth')->name('profile.update');
+Route::patch('/profile/password', [PageController::class, 'updatePassword'])->middleware('auth')->name('profile.password');
 
 Route::middleware('auth')->group(function () {
     Route::get('/bookings/create', [BookingController::class, 'create'])->name('bookings.create');

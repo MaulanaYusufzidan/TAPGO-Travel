@@ -72,7 +72,52 @@ class PageController extends Controller
 
     public function profile(): View
     {
-        return view('pages.profile');
+        $user = \Illuminate\Support\Facades\Auth::user();
+
+        $bookings = $user->bookings()
+            ->with(['schedule.trip.destination'])
+            ->latest()
+            ->get();
+
+        $now = now()->toDateString();
+
+        $upcoming = $bookings->filter(fn ($b) => $b->schedule && $b->schedule->date->toDateString() >= $now && $b->status !== 'cancelled');
+        $completed = $bookings->filter(fn ($b) => $b->schedule && $b->schedule->date->toDateString() < $now && $b->status !== 'cancelled');
+
+        return view('pages.profile', [
+            'bookings' => $bookings,
+            'upcomingCount' => $upcoming->count(),
+            'completedCount' => $completed->count(),
+            'nextBooking' => $upcoming->sortBy(fn ($b) => $b->schedule->date)->first(),
+        ]);
+    }
+
+    public function updateProfile(\Illuminate\Http\Request $request): \Illuminate\Http\RedirectResponse
+    {
+        $user = \Illuminate\Support\Facades\Auth::user();
+
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $user->id],
+        ]);
+
+        $user->update($data);
+
+        return back()->with('status', 'Your profile has been updated.');
+    }
+
+    public function updatePassword(\Illuminate\Http\Request $request): \Illuminate\Http\RedirectResponse
+    {
+        $user = \Illuminate\Support\Facades\Auth::user();
+
+        $data = $request->validate([
+            'current_password' => ['required', 'current_password'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        $user->update(['password' => \Illuminate\Support\Facades\Hash::make($data['password'])]);
+
+        return back()->with('status', 'Your password has been changed.');
     }
 
     /**
