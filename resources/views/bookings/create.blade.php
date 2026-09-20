@@ -3,51 +3,70 @@
 @section('title', 'Traveler Information — TAPGO TRAVEL')
 
 @section('content')
-<div class="container py-5">
-    <h1 class="fw-bold mb-1">Traveler Information</h1>
-    <p class="text-muted mb-4">
-        {{ $schedule->trip->title }} &middot; {{ $schedule->date->translatedFormat('d M Y') }} &middot; {{ $quantity }} traveler
-    </p>
+<main class="marketplace-page">
+<div class="container" style="max-width: 960px;">
+    <div class="booking-stepper">
+        <div class="step done"><span class="step-num">✓</span><span class="step-label">Tour Review</span></div>
+        <div class="step-line"></div>
+        <div class="step active"><span class="step-num">2</span><span class="step-label">Traveler Info</span></div>
+        <div class="step-line"></div>
+        <div class="step"><span class="step-num">3</span><span class="step-label">Make Payment</span></div>
+    </div>
+
+    <div class="detail-panel mb-4 d-flex flex-wrap gap-3 align-items-center justify-content-between">
+        <div>
+            <p class="eyebrow mb-1">Your trip</p>
+            <h1 class="h4 fw-bold mb-1">{{ $schedule->trip->title }}</h1>
+            <p class="text-muted mb-0">📅 {{ $schedule->date->translatedFormat('d M Y') }} · 👥 {{ $quantity }} {{ $quantity > 1 ? 'travelers' : 'traveler' }}</p>
+        </div>
+        @if ($schedule->trip->base_price)
+            <div class="text-end">
+                <p class="small text-muted mb-0">Price / person</p>
+                <p class="h5 fw-bold mb-0" style="color:#17233b;">Rp {{ number_format($schedule->price ?? $schedule->trip->base_price, 0, ',', '.') }}</p>
+            </div>
+        @endif
+    </div>
 
     <form method="POST" action="{{ route('bookings.store') }}">
         @csrf
         <input type="hidden" name="schedule_id" value="{{ $schedule->id }}">
 
         @for ($i = 0; $i < $quantity; $i++)
-            <div class="card border-0 shadow-sm mb-3">
-                <div class="card-body">
-                    <h2 class="h6 fw-semibold text-uppercase mb-3">Traveler {{ $i + 1 }}</h2>
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label small">Nama Lengkap</label>
-                            <input type="text" name="travelers[{{ $i }}][full_name]" class="form-control" required>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label small">Jenis Kelamin</label>
-                            <select name="travelers[{{ $i }}][gender]" class="form-select">
-                                <option value="">-</option>
-                                <option value="male">Laki-laki</option>
-                                <option value="female">Perempuan</option>
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label small">Tanggal Lahir</label>
-                            <input type="date" name="travelers[{{ $i }}][date_of_birth]" class="form-control">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label small">No. HP</label>
-                            <input type="text" name="travelers[{{ $i }}][phone]" class="form-control">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label small">Email</label>
-                            <input type="email" name="travelers[{{ $i }}][email]" class="form-control">
-                        </div>
+            <div class="detail-panel">
+                <h2 class="h6 fw-bold text-uppercase mb-3">Traveler {{ $i + 1 }}</h2>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label small">Full Name</label>
+                        <input type="text" name="travelers[{{ $i }}][full_name]" class="form-control" placeholder="As per ID / passport" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small">Gender</label>
+                        <select name="travelers[{{ $i }}][gender]" class="form-select">
+                            <option value="">-</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small">Date of Birth</label>
+                        <input type="date" name="travelers[{{ $i }}][date_of_birth]" class="form-control">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small">Phone Number</label>
+                        <input type="text" name="travelers[{{ $i }}][phone]" class="form-control" placeholder="+62...">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small">Email</label>
+                        <input type="email" name="travelers[{{ $i }}][email]" class="form-control" placeholder="name@example.com">
                     </div>
                 </div>
             </div>
         @endfor
 
-        <button type="submit" class="btn btn-primary">Lanjutkan</button>
+        <div class="d-flex justify-content-end">
+            <button type="submit" class="btn btn-primary btn-lg">Continue to Payment →</button>
+        </div>
     </form>
 </div>
+</main>
 @endsection
