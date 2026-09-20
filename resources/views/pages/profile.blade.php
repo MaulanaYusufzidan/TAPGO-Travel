@@ -103,7 +103,10 @@
 
             <div id="tab-bookings" class="profile-tab-pane" style="display:none;">
                 <section class="detail-panel mb-0">
-                    <h2>My Bookings</h2>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h2 class="mb-0">My Bookings</h2>
+                        <a href="{{ route('bookings.index') }}" class="small fw-semibold text-decoration-none">Lihat semua pesanan →</a>
+                    </div>
                     @if ($bookings->isEmpty())
                         <p class="text-muted mb-0">You haven't booked a trip yet.</p>
                     @else

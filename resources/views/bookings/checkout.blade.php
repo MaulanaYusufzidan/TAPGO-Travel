@@ -73,7 +73,7 @@
 
                 <form method="POST" action="{{ route('bookings.confirm') }}">
                     @csrf
-                    <button type="submit" class="btn btn-primary w-100">Confirm &amp; Pay ↗</button>
+                    <button type="submit" class="btn btn-primary w-100">Lanjutkan Pembayaran ↗</button>
                 </form>
             </div>
         </div>

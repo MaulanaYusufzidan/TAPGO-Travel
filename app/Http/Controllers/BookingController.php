@@ -26,6 +26,22 @@ class BookingController extends Controller
     }
 
     /**
+     * "Pesanan Saya" — daftar seluruh booking milik user yang login,
+     * lengkap dengan status booking dan status payment (terpisah),
+     * supaya user bisa memantau order tanpa harus WhatsApp CS.
+     */
+    public function index(): View
+    {
+        $bookings = Auth::user()
+            ->bookings()
+            ->with(['schedule.trip.destination', 'payments'])
+            ->latest()
+            ->paginate(10);
+
+        return view('bookings.index', ['bookings' => $bookings]);
+    }
+
+    /**
      * Tampilkan form input data traveler.
      * PRD section 8 (Core User Journey): Select Schedule -> Select
      * Travelers -> Traveler Information.

@@ -14,11 +14,12 @@
             <p class="fw-bold fs-5 text-white mb-4">TAPGO TRAVEL <span class="d-block small text-secondary">Admin Panel</span></p>
             <ul class="nav nav-pills flex-column gap-1">
                 <li class="nav-item"><a class="nav-link text-light {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                <li class="nav-item"><a class="nav-link text-light disabled" href="#">Destinations</a></li>
-                <li class="nav-item"><a class="nav-link text-light disabled" href="#">Trips</a></li>
-                <li class="nav-item"><a class="nav-link text-light disabled" href="#">Schedules</a></li>
-                <li class="nav-item"><a class="nav-link text-light disabled" href="#">Bookings</a></li>
-                <li class="nav-item"><a class="nav-link text-light disabled" href="#">Payments</a></li>
+                <li class="nav-item"><a class="nav-link text-light {{ request()->routeIs('admin.destinations.*') ? 'active' : '' }}" href="{{ route('admin.destinations.index') }}">Destinations</a></li>
+                <li class="nav-item"><a class="nav-link text-light {{ request()->routeIs('admin.trips.*') ? 'active' : '' }}" href="{{ route('admin.trips.index') }}">Trips</a></li>
+                <li class="nav-item"><a class="nav-link text-light {{ request()->routeIs('admin.schedules.*') ? 'active' : '' }}" href="{{ route('admin.schedules.index') }}">Schedules</a></li>
+                <li class="nav-item"><a class="nav-link text-light {{ request()->routeIs('admin.bookings.*') ? 'active' : '' }}" href="{{ route('admin.bookings.index') }}">Bookings</a></li>
+                <li class="nav-item"><a class="nav-link text-light {{ request()->routeIs('admin.payments.*') ? 'active' : '' }}" href="{{ route('admin.payments.index') }}">Payments</a></li>
+                <li class="nav-item"><a class="nav-link text-light {{ request()->routeIs('admin.customers.*') ? 'active' : '' }}" href="{{ route('admin.customers.index') }}">Customers</a></li>
             </ul>
             <hr class="border-secondary">
             <a href="{{ url('/') }}" class="small text-secondary text-decoration-none">&larr; Kembali ke situs</a>

@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\DestinationController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\TripController;
@@ -66,6 +67,7 @@ Route::patch('/profile', [PageController::class, 'updateProfile'])->middleware('
 Route::patch('/profile/password', [PageController::class, 'updatePassword'])->middleware('auth')->name('profile.password');
 
 Route::middleware('auth')->group(function () {
+    Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
     Route::get('/bookings/create', [BookingController::class, 'create'])->name('bookings.create');
     Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
     Route::get('/checkout', [BookingController::class, 'checkout'])->name('checkout.show');
@@ -73,6 +75,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/bookings/{booking}/confirmation', [BookingController::class, 'confirmation'])->name('bookings.confirmation');
     Route::post('/bookings/{booking}/verify-payment', [PaymentController::class, 'verifyStatus'])->name('payments.verify');
     Route::get('/bookings/{booking}/ticket', [TicketController::class, 'show'])->name('bookings.ticket');
+    Route::get('/bookings/{booking}/invoice', [InvoiceController::class, 'show'])->name('bookings.invoice');
 });
 
 Route::post('/webhooks/midtrans', [PaymentController::class, 'handleMidtransCallback'])->name('webhooks.midtrans');
@@ -111,5 +114,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::get('/', 'index')->name('index');
         Route::get('/{payment}', 'show')->name('show');
         Route::post('/{payment}/verify', 'verify')->name('verify');
+    });
+
+    Route::controller(\App\Http\Controllers\Admin\CustomerController::class)->prefix('customers')->name('customers.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/{customer}', 'show')->name('show');
     });
 });

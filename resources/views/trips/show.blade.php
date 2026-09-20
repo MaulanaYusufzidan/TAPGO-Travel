@@ -168,7 +168,7 @@
                             <span id="schedule-total">Rp 0</span>
                         </div>
 
-                        <button type="submit" class="btn btn-primary w-100">Request to Book</button>
+                        <button type="submit" class="btn btn-primary w-100">Pesan Sekarang</button>
                     </form>
                 @endif
 
