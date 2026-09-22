@@ -73,4 +73,14 @@ class Hotel extends Model
     {
         return $this->hasMany(RoomType::class);
     }
+
+    public function policy(): HasOne
+    {
+        return $this->hasOne(HotelPolicy::class);
+    }
+
+    public function nearbyPlaces(): HasMany
+    {
+        return $this->hasMany(NearbyPlace::class);
+    }
 }
