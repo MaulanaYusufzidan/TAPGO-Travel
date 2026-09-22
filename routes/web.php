@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\DestinationController;
+use App\Http\Controllers\HotelController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\TicketController;
@@ -53,8 +54,8 @@ Route::get('/destinations', [DestinationController::class, 'index'])->name('dest
 Route::get('/destinations/{destination}', [DestinationController::class, 'show'])->name('destinations.show');
 Route::get('/trips', [TripController::class, 'index'])->name('trips.index');
 Route::get('/trips/{trip}', [TripController::class, 'show'])->name('trips.show');
-Route::get('/hotels', [PageController::class, 'hotels'])->name('hotels.index');
-Route::get('/hotels/{slug}', [PageController::class, 'hotel'])->name('hotels.show');
+Route::get('/hotels', [HotelController::class, 'index'])->name('hotels.index');
+Route::get('/hotels/{hotel:slug}', [HotelController::class, 'show'])->name('hotels.show');
 Route::get('/flights', [PageController::class, 'flights'])->name('flights.index');
 Route::get('/flights/{id}', [PageController::class, 'flight'])->name('flights.show');
 Route::get('/blog', [PageController::class, 'blog'])->name('blog');

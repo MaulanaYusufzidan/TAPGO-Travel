@@ -100,4 +100,89 @@ class Hotel extends Model
     {
         return $this->hasMany(Favorite::class);
     }
+
+    public function scopePublished($query)
+    {
+        return $query->where('status', 'published');
+    }
+
+    public function scopeSearch($query, ?string $term)
+    {
+        if (! $term) {
+            return $query;
+        }
+
+        return $query->where(function ($q) use ($term) {
+            $q->where('name', 'like', "%{$term}%")
+                ->orWhere('city', 'like', "%{$term}%")
+                ->orWhere('province', 'like', "%{$term}%");
+        });
+    }
+
+    public function scopeMinRating($query, ?float $rating)
+    {
+        if (! $rating) {
+            return $query;
+        }
+
+        return $query->where('rating_avg', '>=', $rating);
+    }
+
+    public function scopeHotelType($query, ?string $type)
+    {
+        if (! $type) {
+            return $query;
+        }
+
+        return $query->where('hotel_type', $type);
+    }
+
+    /**
+     * Hotel dianggap cocok kalau punya SEMUA amenity id yang diminta.
+     */
+    public function scopeWithAmenityIds($query, array $amenityIds)
+    {
+        foreach (array_filter($amenityIds) as $amenityId) {
+            $query->whereHas('amenities', fn ($q) => $q->where('amenities.id', $amenityId));
+        }
+
+        return $query;
+    }
+
+    public function scopeBreakfastIncluded($query, bool $only = true)
+    {
+        if (! $only) {
+            return $query;
+        }
+
+        return $query->whereHas('roomTypes', fn ($q) => $q->where('breakfast_included', true));
+    }
+
+    public function scopeFreeCancellation($query, bool $only = true)
+    {
+        if (! $only) {
+            return $query;
+        }
+
+        return $query->whereHas('roomTypes', fn ($q) => $q->where('free_cancellation', true));
+    }
+
+    /**
+     * Hotel dianggap cocok kalau punya minimal 1 room type dalam rentang harga.
+     */
+    public function scopePriceBetween($query, ?int $min, ?int $max)
+    {
+        if (! $min && ! $max) {
+            return $query;
+        }
+
+        return $query->whereHas('roomTypes', function ($q) use ($min, $max) {
+            if ($min) {
+                $q->where('base_price', '>=', $min);
+            }
+            if ($max) {
+                $q->where('base_price', '<=', $max);
+            }
+        });
+    }
 }
