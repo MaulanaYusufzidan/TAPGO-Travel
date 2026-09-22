@@ -88,4 +88,14 @@ class Hotel extends Model
     {
         return $this->hasMany(HotelBooking::class);
     }
+
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    public function favoritedBy(): HasMany
+    {
+        return $this->hasMany(Favorite::class);
+    }
 }
