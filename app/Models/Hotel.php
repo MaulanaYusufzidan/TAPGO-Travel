@@ -41,6 +41,8 @@ class Hotel extends Model
         'star_rating' => 'integer',
         'latitude' => 'decimal:7',
         'longitude' => 'decimal:7',
+        'check_in_time' => 'datetime:H:i',
+        'check_out_time' => 'datetime:H:i',
         'rating_avg' => 'decimal:2',
         'reviews_count' => 'integer',
         'is_featured' => 'boolean',

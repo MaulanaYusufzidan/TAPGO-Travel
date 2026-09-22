@@ -21,5 +21,17 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class,
             TripSeeder::class,
         ]);
+
+        $this->call([
+            AmenitySeeder::class,
+            HotelSeeder::class,
+            HotelImageSeeder::class,
+            RoomTypeSeeder::class,
+            RoomImageSeeder::class,
+            RoomInventorySeeder::class,
+            HotelPolicySeeder::class,
+            NearbyPlaceSeeder::class,
+            ReviewSeeder::class,
+        ]);
     }
 }
