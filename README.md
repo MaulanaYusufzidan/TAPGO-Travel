@@ -4,7 +4,7 @@
 
 TAPGO Travel adalah project website **travel dan tour booking** yang sedang dikembangkan sebagai platform untuk membantu pengguna menemukan dan merencanakan perjalanan dengan pengalaman browsing yang modern, informatif, dan mudah digunakan.
 
-Project ini dibangun sebagai bagian dari pengembangan portfolio **Web Development**, dengan fokus pada frontend experience, responsive design, dan struktur aplikasi yang scalable.
+Project ini dibangun sebagai bagian dari pengembangan portfolio **Web Development**, dengan fokus pada full-stack development, responsive design, dan struktur aplikasi yang scalable.
 
 ---
 
@@ -31,6 +31,8 @@ Beberapa fitur yang direncanakan untuk TAPGO Travel:
 * 👤 User account & profile
 * ❤️ Wishlist / favorite destinations
 * ⭐ Reviews & ratings
+* 🧾 E-ticket & invoice
+* 🛠️ Admin dashboard (bookings, customers, destinations, payments, schedules, trips)
 * 📱 Fully responsive interface
 * 🎨 Modern and intuitive UI/UX
 
@@ -59,55 +61,81 @@ Design akan dikembangkan kembali dengan identitas **TAPGO Travel** dan tidak dim
 
 Project ini menggunakan beberapa teknologi berikut:
 
+### Backend
+
+* **Laravel 12** (PHP ^8.2)
+* **Laravel Tinker**
+* **MariaDB / MySQL**
+
 ### Frontend
 
-* **Next.js**
-* **TypeScript**
-* **React**
-* **Tailwind CSS**
-* **Framer Motion**
-* **Lucide React**
+* **Blade Templates**
+* **Bootstrap 5**
+* **Sass**
+* **Tailwind CSS 4**
+* **Axios**
+
+### Build Tool
+
+* **Vite** (via `laravel-vite-plugin`)
 
 ### Development Tools
 
+* **Composer**
+* **NPM**
 * **Git**
 * **GitHub**
 * **Visual Studio Code**
-* **ESLint**
+* **Laravel Pint** (code style)
+* **PHPUnit** (testing)
 
 ---
 
 ## 📂 Project Structure
 
-Struktur project mengikuti pendekatan modular menggunakan Next.js App Router.
+Struktur project mengikuti standar arsitektur **Laravel**.
 
 ```text
 TAPGO-Travel/
 ├── app/
-│   ├── page.tsx
-│   ├── layout.tsx
-│   └── globals.css
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   └── Admin/
+│   │   └── Middleware/
+│   ├── Models/
+│   ├── Providers/
+│   ├── Services/
+│   └── Support/
 │
-├── components/
-│   ├── Navbar/
-│   ├── Hero/
-│   ├── Destination/
-│   ├── Tour/
-│   ├── Footer/
-│   └── ...
+├── database/
+│   ├── factories/
+│   ├── migrations/
+│   └── seeders/
 │
-├── data/
-│   └── ...
+├── resources/
+│   ├── css/
+│   ├── js/
+│   ├── sass/
+│   └── views/
+│       ├── admin/
+│       ├── auth/
+│       ├── bookings/
+│       ├── components/
+│       ├── destinations/
+│       ├── layouts/
+│       ├── pages/
+│       ├── tickets/
+│       └── trips/
+│
+├── routes/
+│   └── web.php
 │
 ├── public/
-│   ├── images/
-│   └── ...
-│
-├── lib/
-│   └── ...
-│
+├── config/
+├── tests/
+├── composer.json
 ├── package.json
-├── tsconfig.json
+├── vite.config.js
 └── README.md
 ```
 
@@ -129,22 +157,48 @@ Masuk ke directory project:
 cd TAPGO-Travel
 ```
 
-Install dependencies:
+Install PHP dependencies:
+
+```bash
+composer install
+```
+
+Install JS dependencies:
 
 ```bash
 npm install
 ```
 
-Jalankan development server:
+Copy environment file dan generate application key:
 
 ```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+Sesuaikan konfigurasi database di `.env` (default menggunakan MariaDB/MySQL), lalu jalankan migrasi:
+
+```bash
+php artisan migrate
+```
+
+Jalankan development server (server, queue, log, dan Vite sekaligus):
+
+```bash
+composer run dev
+```
+
+Atau jalankan secara terpisah:
+
+```bash
+php artisan serve
 npm run dev
 ```
 
 Kemudian buka:
 
 ```text
-http://localhost:3000
+http://localhost:8000
 ```
 
 ---
@@ -153,36 +207,34 @@ http://localhost:3000
 
 ### Phase 1 — Foundation
 
-* [x] Project setup
-* [x] Next.js configuration
-* [x] Tailwind CSS setup
-* [x] Initial component structure
+* [x] Project setup (Laravel)
+* [x] Database structure (migrations, models)
+* [x] Base layout & Blade components
 
 ### Phase 2 — UI/UX
 
-* [ ] Homepage
-* [ ] Navigation
-* [ ] Hero section
-* [ ] Destination section
-* [ ] Tour/package cards
-* [ ] Responsive layout
+* [x] Homepage
+* [x] Navigation & layout
+* [ ] Hero section polish
+* [ ] Responsive layout refinement
 * [ ] Animations & interactions
 
 ### Phase 3 — Travel Experience
 
-* [ ] Destination exploration
+* [x] Destination pages
+* [x] Trip listing & detail
 * [ ] Search
-* [ ] Filtering
-* [ ] Package detail
-* [ ] Booking interface
+* [ ] Filtering refinement
+* [x] Booking interface (checkout, confirmation, invoice)
 
 ### Phase 4 — Application Features
 
-* [ ] Authentication
+* [x] Authentication (login, register, password reset)
 * [ ] User profile
 * [ ] Wishlist
 * [ ] Reviews
-* [ ] Booking management
+* [x] Booking management
+* [x] Admin dashboard (bookings, customers, destinations, payments, schedules, trips)
 
 ### Phase 5 — Finalization
 
