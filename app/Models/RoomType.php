@@ -57,6 +57,11 @@ class RoomType extends Model
         return $this->belongsToMany(Amenity::class, 'room_amenity');
     }
 
+    public function bookingRooms(): HasMany
+    {
+        return $this->hasMany(HotelBookingRoom::class);
+    }
+
     /**
      * Ambil (atau bikin fallback dari base_price) baris inventory untuk 1 tanggal.
      * Dipakai saat cek availability & hitung harga (spec section 33-34).

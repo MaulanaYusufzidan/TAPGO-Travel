@@ -83,4 +83,9 @@ class Hotel extends Model
     {
         return $this->hasMany(NearbyPlace::class);
     }
+
+    public function hotelBookings(): HasMany
+    {
+        return $this->hasMany(HotelBooking::class);
+    }
 }
