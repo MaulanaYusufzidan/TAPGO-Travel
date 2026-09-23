@@ -41,7 +41,7 @@
 
         <div class="row g-4">
             <div class="col-lg-3">
-                <x-filter-sidebar :amenities="$amenities" :hotelTypes="$hotelTypes" :filters="$filters" />
+                <x-filter-sidebar :amenities="$amenities" :hotelTypes="$hotelTypes" :bedTypes="$bedTypes" :filters="$filters" />
             </div>
             <div class="col-lg-9">
                 @if($hotels->isEmpty())

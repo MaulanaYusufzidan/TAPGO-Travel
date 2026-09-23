@@ -1,6 +1,8 @@
-@props(['amenities' => collect(), 'hotelTypes' => collect(), 'filters' => []])
+@props(['amenities' => collect(), 'hotelTypes' => collect(), 'bedTypes' => collect(), 'filters' => []])
 @php
     $selectedAmenities = array_map('intval', $filters['amenities'] ?? []);
+    $selectedStars = array_map('intval', $filters['star_ratings'] ?? []);
+    $selectedBedTypes = $filters['bed_types'] ?? [];
     $minRating = $filters['min_rating'] ?? '';
 @endphp
 <aside class="filter-sidebar">
@@ -22,6 +24,20 @@
         <label><input type="radio" name="min_rating" value="" @checked($minRating === '')> Any rating</label>
         @foreach([9 => '9+ Exceptional', 8 => '8+ Excellent', 7 => '7+ Very good'] as $value => $label)
             <label><input type="radio" name="min_rating" value="{{ $value }}" @checked((string) $minRating === (string) $value)> {{ $label }}</label>
+        @endforeach
+    </div>
+
+    <div class="filter-group">
+        <h3>Star Ratings</h3>
+        @foreach([5, 4, 3] as $star)
+            <label><input type="checkbox" name="star_ratings[]" value="{{ $star }}" @checked(in_array($star, $selectedStars, true))> {{ str_repeat('★', $star) }}</label>
+        @endforeach
+    </div>
+
+    <div class="filter-group">
+        <h3>Bed Type</h3>
+        @foreach($bedTypes as $bedType)
+            <label><input type="checkbox" name="bed_types[]" value="{{ $bedType }}" @checked(in_array($bedType, $selectedBedTypes, true))> {{ $bedType }}</label>
         @endforeach
     </div>
 

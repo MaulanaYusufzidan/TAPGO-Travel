@@ -138,6 +138,37 @@ class Hotel extends Model
     }
 
     /**
+     * PDF referensi GeoTrip: "Star Ratings" (checkbox 5★/4★/3★) terpisah
+     * dari "Customer Ratings" (skor review, sudah ada di scopeMinRating).
+     */
+    public function scopeStarRatings($query, array $stars)
+    {
+        $stars = array_filter(array_map('intval', $stars));
+
+        if (empty($stars)) {
+            return $query;
+        }
+
+        return $query->whereIn('star_rating', $stars);
+    }
+
+    /**
+     * PDF referensi GeoTrip: filter "Bed Type" di sidebar — bed_type
+     * disimpan di RoomType, jadi hotel cocok kalau punya minimal 1 room
+     * type dengan salah satu bed type yang dipilih.
+     */
+    public function scopeBedTypes($query, array $bedTypes)
+    {
+        $bedTypes = array_filter($bedTypes);
+
+        if (empty($bedTypes)) {
+            return $query;
+        }
+
+        return $query->whereHas('roomTypes', fn ($q) => $q->whereIn('bed_type', $bedTypes));
+    }
+
+    /**
      * Hotel dianggap cocok kalau punya SEMUA amenity id yang diminta.
      */
     public function scopeWithAmenityIds($query, array $amenityIds)

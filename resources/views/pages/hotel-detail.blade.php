@@ -91,8 +91,12 @@
                         @endguest
 
                         @foreach($hotel->roomTypes as $room)
+                            @php $roomImage = $room->images->first()->image_path ?? null; @endphp
                             <div class="room-rate">
-                                <div>
+                                @if($roomImage)
+                                    <img src="{{ $roomImage }}" alt="{{ $room->name }}" style="width:96px; height:96px; min-width:96px; object-fit:cover; border-radius:.5rem;" onerror="this.style.display='none'">
+                                @endif
+                                <div style="flex:1;">
                                     <strong class="d-block mb-2" style="color:#17233b;">{{ $room->name }}</strong>
                                     <ul>
                                         <li>• {{ $room->bed_type }} · {{ $room->max_guests }} guests @if($room->size_sqm) · {{ $room->size_sqm }} m² @endif</li>

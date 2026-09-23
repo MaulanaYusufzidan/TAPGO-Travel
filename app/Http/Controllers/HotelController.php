@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Amenity;
 use App\Models\Hotel;
+use App\Models\RoomType;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -18,6 +19,8 @@ class HotelController extends Controller
             ->search($request->get('destination'))
             ->minRating($request->get('min_rating'))
             ->hotelType($request->get('hotel_type'))
+            ->starRatings($request->input('star_ratings', []))
+            ->bedTypes($request->input('bed_types', []))
             ->withAmenityIds($request->input('amenities', []))
             ->breakfastIncluded($request->boolean('breakfast'))
             ->freeCancellation($request->boolean('free_cancellation'))
@@ -36,9 +39,11 @@ class HotelController extends Controller
             'hotels' => $hotels,
             'amenities' => Amenity::orderBy('name')->get(),
             'hotelTypes' => Hotel::published()->whereNotNull('hotel_type')->distinct()->orderBy('hotel_type')->pluck('hotel_type'),
+            'bedTypes' => RoomType::whereHas('hotel', fn ($q) => $q->published())->whereNotNull('bed_type')->distinct()->orderBy('bed_type')->pluck('bed_type'),
             'filters' => $request->only([
                 'destination', 'check_in', 'check_out', 'guests',
                 'min_price', 'max_price', 'min_rating', 'hotel_type',
+                'star_ratings', 'bed_types',
                 'amenities', 'breakfast', 'free_cancellation', 'sort',
             ]),
         ]);
