@@ -63,28 +63,60 @@
 
             <section class="detail-panel" id="rooms">
                 <h2>Choose your room</h2>
-                @forelse($hotel->roomTypes as $room)
-                    <div class="room-rate">
-                        <div>
-                            <strong class="d-block mb-2" style="color:#17233b;">{{ $room->name }}</strong>
-                            <ul>
-                                <li>• {{ $room->bed_type }} · {{ $room->max_guests }} guests @if($room->size_sqm) · {{ $room->size_sqm }} m² @endif</li>
-                                @if($room->breakfast_included)<li class="ok">✓ Breakfast included</li>@endif
-                                @if($room->free_cancellation)<li class="ok">✓ Free cancellation</li>@endif
-                                @foreach($room->amenities->take(4) as $amenity)
-                                    <li>• {{ $amenity->name }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                        <div class="room-rate__price">
-                            <strong>Rp {{ number_format($room->base_price, 0, ',', '.') }}</strong>
-                            <span>per night</span>
-                            <button type="button" class="btn btn-primary btn-sm mt-2" disabled title="Booking flow sedang dibangun">Select Room</button>
-                        </div>
-                    </div>
-                @empty
+
+                @if($hotel->roomTypes->isEmpty())
                     <p class="text-muted">No rooms published for this hotel yet.</p>
-                @endforelse
+                @else
+                    <form method="POST" action="{{ route('hotel-bookings.store') }}">
+                        @csrf
+                        <div class="row g-2 mb-3">
+                            <div class="col-md-4">
+                                <label class="small text-muted">Check in</label>
+                                <input type="date" name="check_in" class="form-control form-control-sm" value="{{ old('check_in', $stay['check_in']) }}" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="small text-muted">Check out</label>
+                                <input type="date" name="check_out" class="form-control form-control-sm" value="{{ old('check_out', $stay['check_out']) }}" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="small text-muted">Guests</label>
+                                <input type="number" name="guests" min="1" class="form-control form-control-sm" value="{{ old('guests', $stay['guests']) }}" required>
+                            </div>
+                        </div>
+                        @error('quantity') <p class="text-danger small">{{ $message }}</p> @enderror
+                        @error('guests') <p class="text-danger small">{{ $message }}</p> @enderror
+
+                        @guest
+                            <p class="small text-muted">Please <a href="{{ route('login') }}">login</a> to select a room and book.</p>
+                        @endguest
+
+                        @foreach($hotel->roomTypes as $room)
+                            <div class="room-rate">
+                                <div>
+                                    <strong class="d-block mb-2" style="color:#17233b;">{{ $room->name }}</strong>
+                                    <ul>
+                                        <li>• {{ $room->bed_type }} · {{ $room->max_guests }} guests @if($room->size_sqm) · {{ $room->size_sqm }} m² @endif</li>
+                                        @if($room->breakfast_included)<li class="ok">✓ Breakfast included</li>@endif
+                                        @if($room->free_cancellation)<li class="ok">✓ Free cancellation</li>@endif
+                                        @foreach($room->amenities->take(4) as $amenity)
+                                            <li>• {{ $amenity->name }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                                <div class="room-rate__price">
+                                    <strong>Rp {{ number_format($room->base_price, 0, ',', '.') }}</strong>
+                                    <span>per night</span>
+                                    @auth
+                                        <input type="number" name="quantity[{{ $room->id }}]" value="1" min="1" max="{{ $room->quantity }}" class="form-control form-control-sm mt-2" style="width:80px;" aria-label="Number of rooms">
+                                        <button type="submit" name="room_type_id" value="{{ $room->id }}" class="btn btn-primary btn-sm mt-2">Select Room</button>
+                                    @else
+                                        <button type="button" class="btn btn-primary btn-sm mt-2" disabled>Login to book</button>
+                                    @endauth
+                                </div>
+                            </div>
+                        @endforeach
+                    </form>
+                @endif
             </section>
 
             <section class="detail-panel">

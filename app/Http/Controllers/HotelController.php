@@ -44,7 +44,7 @@ class HotelController extends Controller
         ]);
     }
 
-    public function show(Hotel $hotel): View
+    public function show(Request $request, Hotel $hotel): View
     {
         abort_unless($hotel->status === 'published', 404);
 
@@ -93,6 +93,11 @@ class HotelController extends Controller
             'related' => $related,
             'reviewBreakdown' => $reviewBreakdown,
             'fromPrice' => $hotel->roomTypes->min('base_price'),
+            'stay' => [
+                'check_in' => $request->get('check_in', now()->addDay()->toDateString()),
+                'check_out' => $request->get('check_out', now()->addDays(2)->toDateString()),
+                'guests' => (int) $request->get('guests', 2),
+            ],
         ]);
     }
 }
