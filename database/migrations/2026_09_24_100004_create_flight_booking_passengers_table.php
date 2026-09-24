@@ -1,0 +1,31 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('flight_booking_passengers', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('flight_booking_id')->constrained('flight_bookings')->cascadeOnDelete();
+
+            $table->string('first_name');
+            $table->string('last_name');
+            $table->string('passport_number');
+            $table->date('passport_expiry');
+            $table->date('date_of_birth');
+            $table->enum('gender', ['male', 'female']);
+            $table->string('nationality');
+
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('flight_booking_passengers');
+    }
+};
