@@ -30,6 +30,10 @@
         <div class="text-end">
             @if($fromPrice)
                 <p class="small text-muted mb-1">From</p>
+                @if($hotel->discount_percentage)
+                    <span class="ribbon-discount" style="position:static; display:inline-block; margin-bottom:.3rem;">{{ $hotel->discount_percentage }}% Off</span>
+                    <p class="price-was mb-0">Rp {{ number_format($originalFromPrice, 0, ',', '.') }}</p>
+                @endif
                 <p class="h4 fw-bold mb-1" style="color:#17233b;">Rp {{ number_format($fromPrice, 0, ',', '.') }}</p>
                 <span class="small text-muted d-block mb-2">per night</span>
             @endif
@@ -37,16 +41,55 @@
         </div>
     </div>
 
+    @php $allImages = $hotel->images->values(); @endphp
     <div class="gallery-grid" style="height: 380px;">
         <div class="gallery-grid__main">
-            <img src="{{ $mainImage->image_path ?? $fallback }}" alt="{{ $hotel->name }}" onerror="this.onerror=null;this.src='{{ $fallback }}'">
+            <a href="#" onclick="tapgoLightboxOpen(event, 0)"><img src="{{ $mainImage->image_path ?? $fallback }}" alt="{{ $hotel->name }}" onerror="this.onerror=null;this.src='{{ $fallback }}'"></a>
         </div>
         <div class="gallery-grid__thumbs">
             @foreach($thumbs as $i => $img)
-                <a href="{{ $img->image_path }}" target="_blank" rel="noopener"><img src="{{ $img->image_path }}" alt="{{ $hotel->name }} photo {{ $i + 1 }}"></a>
+                @php $imgIndex = $allImages->search(fn ($x) => $x->id === $img->id); @endphp
+                <a href="#" onclick="tapgoLightboxOpen(event, {{ $imgIndex }})" style="position:relative; display:block;">
+                    <img src="{{ $img->image_path }}" alt="{{ $hotel->name }} photo {{ $i + 1 }}">
+                    @if($loop->last && $allImages->count() > 5)
+                        <span style="position:absolute; inset:0; background:rgba(0,0,0,.5); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:.85rem; border-radius:inherit;">+{{ $allImages->count() - 5 }} More Photos</span>
+                    @endif
+                </a>
             @endforeach
         </div>
     </div>
+
+    <div id="tapgo-lightbox" style="display:none; position:fixed; inset:0; background:rgba(10,15,25,.92); z-index:1050; align-items:center; justify-content:center;">
+        <button type="button" onclick="tapgoLightboxClose()" aria-label="Close" style="position:absolute; top:20px; right:24px; background:none; border:none; color:#fff; font-size:2rem; line-height:1; cursor:pointer;">&times;</button>
+        <button type="button" onclick="tapgoLightboxNav(-1)" aria-label="Previous" style="position:absolute; left:16px; background:none; border:none; color:#fff; font-size:2.5rem; cursor:pointer;">&#8249;</button>
+        <img id="tapgo-lightbox-img" src="" alt="{{ $hotel->name }}" style="max-width:88vw; max-height:82vh; object-fit:contain; border-radius:.5rem;">
+        <button type="button" onclick="tapgoLightboxNav(1)" aria-label="Next" style="position:absolute; right:16px; background:none; border:none; color:#fff; font-size:2.5rem; cursor:pointer;">&#8250;</button>
+        <span id="tapgo-lightbox-counter" style="position:absolute; bottom:20px; color:#fff; font-size:.85rem;"></span>
+    </div>
+    <script>
+        window.tapgoGalleryImages = @json($allImages->pluck('image_path')->values());
+        window.tapgoLightboxIndex = 0;
+        function tapgoLightboxRender() {
+            var imgs = window.tapgoGalleryImages;
+            if (!imgs.length) return;
+            document.getElementById('tapgo-lightbox-img').src = imgs[window.tapgoLightboxIndex];
+            document.getElementById('tapgo-lightbox-counter').textContent = (window.tapgoLightboxIndex + 1) + ' / ' + imgs.length;
+        }
+        function tapgoLightboxOpen(e, index) {
+            e.preventDefault();
+            window.tapgoLightboxIndex = index || 0;
+            tapgoLightboxRender();
+            document.getElementById('tapgo-lightbox').style.display = 'flex';
+        }
+        function tapgoLightboxClose() {
+            document.getElementById('tapgo-lightbox').style.display = 'none';
+        }
+        function tapgoLightboxNav(dir) {
+            var imgs = window.tapgoGalleryImages;
+            window.tapgoLightboxIndex = (window.tapgoLightboxIndex + dir + imgs.length) % imgs.length;
+            tapgoLightboxRender();
+        }
+    </script>
 
     <div class="info-box-row">
         <div class="info-box"><h3>📍 Top Attractions</h3><ul>@forelse($nearbyGrouped->get('Attraction', collect()) as $a)<li>{{ $a->name }} <span class="dist">{{ $a->distance }} {{ $a->unit }}</span></li>@empty<li class="text-muted">No data yet</li>@endforelse</ul></div>
@@ -92,7 +135,7 @@
 
                         @foreach($hotel->roomTypes as $room)
                             @php $roomImage = $room->images->first()->image_path ?? null; @endphp
-                            <div class="room-rate">
+                            <div class="room-rate" style="align-items:flex-start;">
                                 @if($roomImage)
                                     <img src="{{ $roomImage }}" alt="{{ $room->name }}" style="width:96px; height:96px; min-width:96px; object-fit:cover; border-radius:.5rem;" onerror="this.style.display='none'">
                                 @endif
@@ -100,22 +143,41 @@
                                     <strong class="d-block mb-2" style="color:#17233b;">{{ $room->name }}</strong>
                                     <ul>
                                         <li>• {{ $room->bed_type }} · {{ $room->max_guests }} guests @if($room->size_sqm) · {{ $room->size_sqm }} m² @endif</li>
-                                        @if($room->breakfast_included)<li class="ok">✓ Breakfast included</li>@endif
-                                        @if($room->free_cancellation)<li class="ok">✓ Free cancellation</li>@endif
                                         @foreach($room->amenities->take(4) as $amenity)
                                             <li>• {{ $amenity->name }}</li>
                                         @endforeach
                                     </ul>
+                                    <div class="mt-2">
+                                        <label class="small text-muted d-block mb-1">Rooms</label>
+                                        <input type="number" name="quantity[{{ $room->id }}]" value="1" min="1" max="{{ $room->quantity }}" class="form-control form-control-sm" style="width:80px;" aria-label="Number of rooms">
+                                    </div>
                                 </div>
-                                <div class="room-rate__price">
-                                    <strong>Rp {{ number_format($room->base_price, 0, ',', '.') }}</strong>
-                                    <span>per night</span>
-                                    @auth
-                                        <input type="number" name="quantity[{{ $room->id }}]" value="1" min="1" max="{{ $room->quantity }}" class="form-control form-control-sm mt-2" style="width:80px;" aria-label="Number of rooms">
-                                        <button type="submit" name="room_type_id" value="{{ $room->id }}" class="btn btn-primary btn-sm mt-2">Select Room</button>
-                                    @else
-                                        <button type="button" class="btn btn-primary btn-sm mt-2" disabled>Login to book</button>
-                                    @endauth
+                                <div style="min-width:220px;">
+                                    @forelse($room->ratePlans as $plan)
+                                        <div class="border rounded p-2 mb-2" style="border-color:#e9edf0 !important;">
+                                            <p class="small fw-semibold mb-1" style="color:#17233b;">{{ $plan->name }}</p>
+                                            <ul class="mb-2" style="list-style:none; padding:0; font-size:.76rem; color:#667384;">
+                                                @if($plan->breakfast_included)<li class="ok">✓ Breakfast included</li>@endif
+                                                @if($plan->free_cancellation)<li class="ok">✓ Free cancellation</li>@endif
+                                                <li>{{ $plan->refundable ? 'Refundable' : 'Non-refundable' }}</li>
+                                            </ul>
+                                            <strong class="d-block">Rp {{ number_format($room->base_price + $plan->price_addon, 0, ',', '.') }}</strong>
+                                            <span class="small text-muted">per night</span>
+                                            @auth
+                                                <button type="submit" name="selection" value="{{ $room->id }}:{{ $plan->id }}" class="btn btn-primary btn-sm mt-2 w-100">Select Room</button>
+                                            @else
+                                                <button type="button" class="btn btn-primary btn-sm mt-2 w-100" disabled>Login to book</button>
+                                            @endauth
+                                        </div>
+                                    @empty
+                                        <strong class="d-block">Rp {{ number_format($room->base_price, 0, ',', '.') }}</strong>
+                                        <span class="small text-muted">per night</span>
+                                        @auth
+                                            <button type="submit" name="selection" value="{{ $room->id }}:" class="btn btn-primary btn-sm mt-2 w-100">Select Room</button>
+                                        @else
+                                            <button type="button" class="btn btn-primary btn-sm mt-2 w-100" disabled>Login to book</button>
+                                        @endauth
+                                    @endforelse
                                 </div>
                             </div>
                         @endforeach
@@ -125,11 +187,22 @@
 
             <section class="detail-panel">
                 <h2>Service & Amenities</h2>
-                <div class="row g-2">
+                <div class="row g-2 mb-3">
                     @foreach($hotel->amenities as $amenity)
                         <div class="col-6 col-md-4">✓ {{ $amenity->name }}</div>
                     @endforeach
                 </div>
+                @php $amenityPhotos = $hotel->amenities->whereNotNull('image_path')->take(4); @endphp
+                @if($amenityPhotos->isNotEmpty())
+                    <div class="row g-2">
+                        @foreach($amenityPhotos as $amenity)
+                            <div class="col-6 col-md-3">
+                                <img src="{{ $amenity->image_path }}" alt="{{ $amenity->name }}" style="width:100%; height:90px; object-fit:cover; border-radius:.5rem;" onerror="this.closest('.col-6').style.display='none'">
+                                <p class="small text-muted mt-1 mb-0 text-center">{{ $amenity->name }}</p>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
             </section>
 
             @if($hotel->policy)
@@ -200,6 +273,9 @@
                 <p class="text-muted small">{{ $hotel->name }} · {{ $hotel->city }}</p>
                 <hr>
                 @if($fromPrice)
+                    @if($hotel->discount_percentage)
+                        <div class="d-flex justify-content-between mb-1"><span class="text-muted small">Was</span><span class="price-was">Rp {{ number_format($originalFromPrice, 0, ',', '.') }}</span></div>
+                    @endif
                     <div class="d-flex justify-content-between mb-2"><span>From</span><strong>Rp {{ number_format($fromPrice, 0, ',', '.') }}</strong></div>
                 @endif
                 <p class="small text-muted">Per night, taxes and fees may apply.</p>
@@ -222,7 +298,11 @@
                                 <h3 class="h6 mb-1"><a href="{{ route('hotels.show', $item) }}">{{ $item->name }}</a></h3>
                                 <p class="text-muted small mb-2">{{ $item->city }}, {{ $item->province }}</p>
                                 @if($item->room_types_min_base_price)
-                                    <p class="small fw-semibold mb-0" style="color:#17233b;">From Rp {{ number_format($item->room_types_min_base_price, 0, ',', '.') }}/night</p>
+                                    @php $itemPrice = $item->priceAfterDiscount($item->room_types_min_base_price); @endphp
+                                    @if($item->discount_percentage)
+                                        <span class="price-was d-block">Rp {{ number_format($item->room_types_min_base_price, 0, ',', '.') }}</span>
+                                    @endif
+                                    <p class="small fw-semibold mb-0" style="color:#17233b;">From Rp {{ number_format($itemPrice, 0, ',', '.') }}/night</p>
                                 @endif
                             </div>
                         </article>

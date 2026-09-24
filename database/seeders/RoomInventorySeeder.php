@@ -14,7 +14,7 @@ class RoomInventorySeeder extends Seeder
      */
     public function run(): void
     {
-        RoomType::all()->each(function (RoomType $roomType) {
+        RoomType::with('hotel')->get()->each(function (RoomType $roomType) {
             $roomType->inventory()->delete();
 
             $rows = [];
@@ -25,6 +25,7 @@ class RoomInventorySeeder extends Seeder
                 $isWeekend = $date->isWeekend();
 
                 $price = $roomType->base_price * ($isWeekend ? 1.15 : 1.0);
+                $price = $roomType->hotel->priceAfterDiscount($price);
                 $available = fake()->numberBetween(0, $roomType->quantity);
 
                 $rows[] = [

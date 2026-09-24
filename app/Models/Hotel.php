@@ -34,6 +34,7 @@ class Hotel extends Model
         'rating_avg',
         'reviews_count',
         'is_featured',
+        'discount_percentage',
         'status',
     ];
 
@@ -46,6 +47,7 @@ class Hotel extends Model
         'rating_avg' => 'decimal:2',
         'reviews_count' => 'integer',
         'is_featured' => 'boolean',
+        'discount_percentage' => 'integer',
     ];
 
     /**
@@ -99,6 +101,19 @@ class Hotel extends Model
     public function favoritedBy(): HasMany
     {
         return $this->hasMany(Favorite::class);
+    }
+
+    /**
+     * Terapkan discount_percentage hotel ke sebuah harga (dipakai di view
+     * buat nampilin harga coret, section 25 spec).
+     */
+    public function priceAfterDiscount(float $price): float
+    {
+        if (! $this->discount_percentage) {
+            return $price;
+        }
+
+        return round($price * (1 - $this->discount_percentage / 100), -2);
     }
 
     public function scopePublished($query)

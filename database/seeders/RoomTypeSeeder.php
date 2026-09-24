@@ -97,6 +97,31 @@ class RoomTypeSeeder extends Seeder
 
                 $amenityIds = Amenity::whereIn('name', $amenityNames)->pluck('id');
                 $roomType->amenities()->sync($amenityIds);
+
+                // 2 pilihan harga per kamar, pola "Your Choice" di PDF
+                // referensi GeoTrip: Room Only (murah, non-refundable) vs
+                // Breakfast Included (lebih mahal, refundable).
+                $roomType->ratePlans()->delete();
+                $breakfastAddon = round($roomType->base_price * 0.12, -3);
+
+                $roomType->ratePlans()->createMany([
+                    [
+                        'name' => 'Room Only',
+                        'price_addon' => 0,
+                        'breakfast_included' => false,
+                        'free_cancellation' => false,
+                        'refundable' => false,
+                        'sort_order' => 0,
+                    ],
+                    [
+                        'name' => 'Breakfast Included',
+                        'price_addon' => $breakfastAddon,
+                        'breakfast_included' => true,
+                        'free_cancellation' => true,
+                        'refundable' => true,
+                        'sort_order' => 1,
+                    ],
+                ]);
             }
         });
     }

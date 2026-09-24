@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\HotelBooking;
+use App\Models\RoomRatePlan;
 use App\Models\RoomType;
 use App\Services\HotelAvailabilityService;
 use App\Services\HotelBookingService;
@@ -23,20 +24,28 @@ class HotelBookingController extends Controller
     }
 
     /**
-     * Terima pilihan room type + tanggal + jumlah kamar dari halaman hotel
-     * detail (spec section 32-34). Cek availability, hitung harga di
-     * backend, simpan sementara ke session, lalu lempar ke checkout.
+     * Terima pilihan room type + rate plan + tanggal + jumlah kamar dari
+     * halaman hotel detail (spec section 32-34). Cek availability, hitung
+     * harga di backend, simpan sementara ke session, lalu lempar ke
+     * checkout.
      */
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'room_type_id' => ['required', 'exists:room_types,id'],
+            'selection' => ['required', 'string'],
             'check_in' => ['required', 'date', 'after_or_equal:today'],
             'check_out' => ['required', 'date', 'after:check_in'],
             'guests' => ['required', 'integer', 'min:1'],
         ]);
 
-        $roomType = RoomType::with('hotel')->findOrFail($validated['room_type_id']);
+        // "selection" = "{room_type_id}:{room_rate_plan_id}", dikirim oleh
+        // tombol "Select Room" di tiap pilihan rate plan (spec: 2 pilihan
+        // harga per kamar, "Your Choice").
+        [$roomTypeId, $ratePlanId] = array_pad(explode(':', $validated['selection'], 2), 2, null);
+
+        $roomType = RoomType::with('hotel')->findOrFail($roomTypeId);
+        $ratePlan = $ratePlanId ? RoomRatePlan::where('room_type_id', $roomType->id)->findOrFail($ratePlanId) : null;
+
         $checkIn = Carbon::parse($validated['check_in'])->startOfDay();
         $checkOut = Carbon::parse($validated['check_out'])->startOfDay();
 
@@ -60,11 +69,12 @@ class HotelBookingController extends Controller
             ]);
         }
 
-        $breakdown = $this->bookingService->calculatePrice($roomType, $checkIn, $checkOut, $quantity);
+        $breakdown = $this->bookingService->calculatePrice($roomType, $checkIn, $checkOut, $quantity, $ratePlan);
 
         session([
             'pending_hotel_booking' => [
                 'room_type_id' => $roomType->id,
+                'room_rate_plan_id' => $ratePlan?->id,
                 'hotel_id' => $roomType->hotel_id,
                 'check_in' => $checkIn->toDateString(),
                 'check_out' => $checkOut->toDateString(),
@@ -91,9 +101,13 @@ class HotelBookingController extends Controller
         }
 
         $roomType = RoomType::with('hotel')->findOrFail($pending['room_type_id']);
+        $ratePlan = $pending['room_rate_plan_id'] ?? null
+            ? RoomRatePlan::find($pending['room_rate_plan_id'])
+            : null;
 
         return view('hotel-bookings.checkout', [
             'roomType' => $roomType,
+            'ratePlan' => $ratePlan,
             'hotel' => $roomType->hotel,
             'checkIn' => Carbon::parse($pending['check_in']),
             'checkOut' => Carbon::parse($pending['check_out']),
@@ -125,6 +139,7 @@ class HotelBookingController extends Controller
         ]);
 
         $roomType = RoomType::with('hotel')->findOrFail($pending['room_type_id']);
+        $ratePlanId = $pending['room_rate_plan_id'] ?? null;
         $checkIn = Carbon::parse($pending['check_in']);
         $checkOut = Carbon::parse($pending['check_out']);
         $quantity = $pending['quantity'];
@@ -137,7 +152,7 @@ class HotelBookingController extends Controller
                 ->withErrors(['quantity' => 'Kamar sudah tidak cukup tersedia lagi. Silakan pilih tanggal atau kamar lain.']);
         }
 
-        $booking = DB::transaction(function () use ($roomType, $checkIn, $checkOut, $quantity, $breakdown, $pending, $validated) {
+        $booking = DB::transaction(function () use ($roomType, $ratePlanId, $checkIn, $checkOut, $quantity, $breakdown, $pending, $validated) {
             if (! $this->availability->reserve($roomType, $checkIn, $checkOut, $quantity)) {
                 return null;
             }
@@ -164,6 +179,7 @@ class HotelBookingController extends Controller
 
             $booking->bookingRooms()->create([
                 'room_type_id' => $roomType->id,
+                'room_rate_plan_id' => $ratePlanId,
                 'quantity' => $quantity,
                 'price_per_night' => $roomType->base_price,
                 'nights' => $breakdown['nights'],
@@ -189,15 +205,14 @@ class HotelBookingController extends Controller
 
     /**
      * Halaman konfirmasi setelah booking dibuat. Integrasi pembayaran
-     * menyusul di fase Payment berikutnya (PRD section 39 Git Strategy —
-     * grup Payment) — status booking masih 'pending' sampai payment
-     * beneran terhubung.
+     * menyusul di fase Payment berikutnya — status booking masih 'pending'
+     * sampai payment beneran terhubung.
      */
     public function confirmation(HotelBooking $hotelBooking): View
     {
         abort_unless($hotelBooking->user_id === Auth::id(), 403);
 
-        $hotelBooking->load(['hotel', 'bookingRooms.roomType']);
+        $hotelBooking->load(['hotel', 'bookingRooms.roomType', 'bookingRooms.ratePlan']);
 
         return view('hotel-bookings.confirmation', ['booking' => $hotelBooking]);
     }

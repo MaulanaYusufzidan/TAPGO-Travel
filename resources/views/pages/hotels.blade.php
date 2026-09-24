@@ -52,13 +52,13 @@
                 @else
                     <div class="results-toolbar">
                         <span><strong>{{ $hotels->total() }} hotels found</strong> across Indonesia</span>
-                        <select name="sort" class="form-select form-select-sm" style="max-width:200px;" onchange="this.form.submit()">
-                            <option value="recommended" @selected(($filters['sort'] ?? 'recommended') === 'recommended')>Recommended</option>
-                            <option value="price_low" @selected(($filters['sort'] ?? '') === 'price_low')>Price: low to high</option>
-                            <option value="price_high" @selected(($filters['sort'] ?? '') === 'price_high')>Price: high to low</option>
-                            <option value="rating" @selected(($filters['sort'] ?? '') === 'rating')>Guest rating</option>
-                            <option value="most_reviewed" @selected(($filters['sort'] ?? '') === 'most_reviewed')>Most reviewed</option>
-                        </select>
+                        @php $currentSort = $filters['sort'] ?? 'recommended'; @endphp
+                        <div class="btn-group" role="group" aria-label="Sort hotels">
+                            @foreach(['recommended' => 'Our Trending', 'most_reviewed' => 'Most Popular', 'price_low' => 'Lowest Price'] as $value => $label)
+                                <a href="{{ request()->fullUrlWithQuery(['sort' => $value]) }}"
+                                   class="btn btn-sm {{ $currentSort === $value ? 'btn-primary' : 'btn-outline-secondary' }}">{{ $label }}</a>
+                            @endforeach
+                        </div>
                     </div>
 
                     @foreach($hotels as $hotel)

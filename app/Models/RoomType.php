@@ -62,6 +62,11 @@ class RoomType extends Model
         return $this->hasMany(HotelBookingRoom::class);
     }
 
+    public function ratePlans(): HasMany
+    {
+        return $this->hasMany(RoomRatePlan::class)->orderBy('sort_order');
+    }
+
     /**
      * Ambil (atau bikin fallback dari base_price) baris inventory untuk 1 tanggal.
      * Dipakai saat cek availability & hitung harga (spec section 33-34).

@@ -23,7 +23,7 @@
         <p class="text-muted mb-1">{{ $booking->hotel->city }}, {{ $booking->hotel->province }}</p>
         <p class="mb-1">📅 {{ $booking->check_in->translatedFormat('d M Y') }} — {{ $booking->check_out->translatedFormat('d M Y') }}</p>
         @foreach($booking->bookingRooms as $room)
-            <p class="mb-1">{{ $room->quantity }}x {{ $room->roomType->name ?? 'Room' }} · {{ $room->nights }} night(s)</p>
+            <p class="mb-1">{{ $room->quantity }}x {{ $room->roomType->name ?? 'Room' }}{{ $room->ratePlan ? ' ('.$room->ratePlan->name.')' : '' }} · {{ $room->nights }} night(s)</p>
         @endforeach
         <p class="mb-2">Total: <strong>Rp {{ number_format($booking->total, 0, ',', '.') }}</strong></p>
         <span class="rating">{{ ucfirst($booking->status) }}</span>

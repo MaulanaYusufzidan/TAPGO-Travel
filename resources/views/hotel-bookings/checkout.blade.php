@@ -26,7 +26,7 @@
                 <div class="detail-panel">
                     <h2>Your Stay</h2>
                     <p class="mb-1 fw-bold" style="color:#17233b;">{{ $hotel->name }}</p>
-                    <p class="text-muted mb-1">{{ $roomType->name }} · {{ $quantity }} room(s) · {{ $guests }} guests</p>
+                    <p class="text-muted mb-1">{{ $roomType->name }}{{ $ratePlan ? ' · '.$ratePlan->name : '' }} · {{ $quantity }} room(s) · {{ $guests }} guests</p>
                     <p class="mb-0">📅 {{ $checkIn->translatedFormat('d M Y') }} — {{ $checkOut->translatedFormat('d M Y') }} ({{ $breakdown['nights'] }} night{{ $breakdown['nights'] > 1 ? 's' : '' }})</p>
                 </div>
 

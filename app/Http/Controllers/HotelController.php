@@ -61,6 +61,7 @@ class HotelController extends Controller
             'roomTypes' => fn ($q) => $q->where('status', 'published')->orderBy('base_price'),
             'roomTypes.images' => fn ($q) => $q->orderBy('sort_order'),
             'roomTypes.amenities',
+            'roomTypes.ratePlans',
             'reviews' => fn ($q) => $q->published()->with('user')->latest()->limit(10),
         ]);
 
@@ -93,11 +94,14 @@ class HotelController extends Controller
             'Value' => round((float) $hotel->reviews()->published()->avg('value_rating'), 1),
         ];
 
+        $originalFromPrice = $hotel->roomTypes->min('base_price');
+
         return view('pages.hotel-detail', [
             'hotel' => $hotel,
             'related' => $related,
             'reviewBreakdown' => $reviewBreakdown,
-            'fromPrice' => $hotel->roomTypes->min('base_price'),
+            'fromPrice' => $originalFromPrice ? $hotel->priceAfterDiscount($originalFromPrice) : null,
+            'originalFromPrice' => $originalFromPrice,
             'stay' => [
                 'check_in' => $request->get('check_in', now()->addDay()->toDateString()),
                 'check_out' => $request->get('check_out', now()->addDays(2)->toDateString()),

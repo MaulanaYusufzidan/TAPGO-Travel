@@ -14,6 +14,7 @@ class Amenity extends Model
         'name',
         'slug',
         'icon',
+        'image_path',
         'category',
     ];
 

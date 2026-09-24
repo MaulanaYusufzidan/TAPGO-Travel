@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\RoomRatePlan;
 use App\Models\RoomType;
 use Illuminate\Support\Carbon;
 
@@ -22,10 +23,23 @@ class HotelBookingService
     /**
      * @return array{nights: int, quantity: int, subtotal: float, tax: float, service_fee: float, discount: float, total: float}
      */
-    public function calculatePrice(RoomType $roomType, Carbon $checkIn, Carbon $checkOut, int $quantity, float $discount = 0): array
-    {
+    public function calculatePrice(
+        RoomType $roomType,
+        Carbon $checkIn,
+        Carbon $checkOut,
+        int $quantity,
+        ?RoomRatePlan $ratePlan = null,
+        float $discount = 0
+    ): array {
         $nights = $checkIn->diffInDays($checkOut);
         $subtotal = $this->availability->subtotalFor($roomType, $checkIn, $checkOut, $quantity);
+
+        // Rate plan (ex: Breakfast Included) nambah harga flat per malam per
+        // kamar di atas harga dinamis room_inventory (spec: 2 pilihan harga
+        // per kamar, "Your Choice").
+        if ($ratePlan) {
+            $subtotal += (float) $ratePlan->price_addon * $quantity * $nights;
+        }
 
         $taxPercentage = (float) config('booking.tax_percentage', 11);
         $feePercentage = (float) config('booking.service_fee_percentage', 2);

@@ -157,9 +157,13 @@ class HotelSeeder extends Seeder
 
     public function run(): void
     {
-        foreach ($this->hotels as $data) {
+        foreach ($this->hotels as $index => $data) {
             $amenityNames = $data['amenities'];
             unset($data['amenities']);
+
+            // Diskon promo cuma di sebagian hotel (index genap), variasi
+            // 10/15/20% — bukan semua hotel diskon (spec section 25).
+            $discount = $index % 2 === 0 ? [10, 15, 20][$index % 3] : null;
 
             $hotel = Hotel::updateOrCreate(
                 ['slug' => str($data['name'])->slug()],
@@ -170,6 +174,7 @@ class HotelSeeder extends Seeder
                     'check_out_time' => '12:00',
                     'phone' => '+62 21 '.fake()->numerify('####-####'),
                     'email' => 'info@'.str($data['name'])->slug().'.tapgo.travel',
+                    'discount_percentage' => $discount,
                     'status' => 'published',
                 ])
             );

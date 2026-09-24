@@ -2,7 +2,8 @@
 @php
     $fallback = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=85';
     $image = $hotel->primaryImage->image_path ?? $hotel->images->first()->image_path ?? $fallback;
-    $fromPrice = $hotel->room_types_min_base_price ?? null;
+    $originalPrice = $hotel->room_types_min_base_price ?? null;
+    $fromPrice = $originalPrice ? $hotel->priceAfterDiscount($originalPrice) : null;
 
     $ratingLabel = match (true) {
         $hotel->rating_avg >= 9 => 'Exceptional',
@@ -18,7 +19,7 @@
             <img src="{{ $image }}" alt="{{ $hotel->name }}" style="width:100%; height:100%; object-fit:cover; display:block;" onerror="this.onerror=null;this.src='{{ $fallback }}'">
         </a>
         @if($hotel->hotel_type)<span class="card-label">{{ $hotel->hotel_type }}</span>@endif
-        @if($hotel->is_featured)<span class="ribbon-discount">Featured</span>@endif
+        @if($hotel->discount_percentage)<span class="ribbon-discount">{{ $hotel->discount_percentage }}% Off</span>@endif
     </div>
     <div class="hotel-result__info">
         <div class="d-flex justify-content-between align-items-start gap-2">
@@ -41,6 +42,9 @@
     <div class="hotel-result__price">
         <span class="small text-muted">From</span>
         @if($fromPrice)
+            @if($hotel->discount_percentage)
+                <span class="price-was">Rp {{ number_format($originalPrice, 0, ',', '.') }}</span>
+            @endif
             <strong>Rp {{ number_format($fromPrice, 0, ',', '.') }}</strong>
             <span class="small text-muted">per night</span>
         @else
