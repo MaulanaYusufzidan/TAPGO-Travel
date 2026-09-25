@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\DestinationController;
+use App\Http\Controllers\FlightBookingController;
 use App\Http\Controllers\FlightController;
 use App\Http\Controllers\HotelBookingController;
 use App\Http\Controllers\HotelController;
@@ -84,6 +85,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/hotel-checkout', [HotelBookingController::class, 'checkout'])->name('hotel-checkout.show');
     Route::post('/hotel-checkout/confirm', [HotelBookingController::class, 'confirm'])->name('hotel-bookings.confirm');
     Route::get('/hotel-bookings/{hotelBooking}/confirmation', [HotelBookingController::class, 'confirmation'])->name('hotel-bookings.confirmation');
+
+    Route::post('/flight-bookings', [FlightBookingController::class, 'store'])->name('flight-bookings.store');
+    Route::get('/flight-checkout', [FlightBookingController::class, 'checkout'])->name('flight-checkout.show');
+    Route::post('/flight-checkout/confirm', [FlightBookingController::class, 'confirm'])->name('flight-bookings.confirm');
+    Route::get('/flight-bookings/{flightBooking}/confirmation', [FlightBookingController::class, 'confirmation'])->name('flight-bookings.confirmation');
 });
 
 Route::post('/webhooks/midtrans', [PaymentController::class, 'handleMidtransCallback'])->name('webhooks.midtrans');
