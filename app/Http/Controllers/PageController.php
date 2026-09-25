@@ -6,18 +6,6 @@ use Illuminate\View\View;
 
 class PageController extends Controller
 {
-    public function flights(): View
-    {
-        return view('pages.flights', ['flights' => $this->flightsData()]);
-    }
-
-    public function flight(string $id): View
-    {
-        return view('pages.flight-detail', [
-            'flight' => collect($this->flightsData())->firstWhere('id', $id) ?? $this->flightsData()[0],
-        ]);
-    }
-
     public function blog(): View
     {
         return view('pages.blog', ['posts' => $this->posts()]);
@@ -106,18 +94,6 @@ class PageController extends Controller
         $user->update(['password' => \Illuminate\Support\Facades\Hash::make($data['password'])]);
 
         return back()->with('status', 'Your password has been changed.');
-    }
-
-    /**
-     * Static demo inventory for the Flights browse pages.
-     */
-    private function flightsData(): array
-    {
-        return [
-            ['id' => 'ga-402', 'airline' => 'Garuda Indonesia', 'number' => 'GA 402', 'from' => 'CGK', 'fromCity' => 'Jakarta', 'to' => 'DPS', 'toCity' => 'Bali', 'depart' => '08:00', 'arrive' => '11:00', 'duration' => '2h 00m', 'stops' => 'Non-stop', 'price' => '1.450.000', 'original_price' => '1.450.000', 'amenities' => ['Wi-Fi', 'Meal', '20kg baggage']],
-            ['id' => 'id-6502', 'airline' => 'Batik Air', 'number' => 'ID 6502', 'from' => 'CGK', 'fromCity' => 'Jakarta', 'to' => 'DPS', 'toCity' => 'Bali', 'depart' => '10:30', 'arrive' => '13:35', 'duration' => '2h 05m', 'stops' => 'Non-stop', 'price' => '1.290.000', 'original_price' => '1.450.000', 'amenities' => ['Meal', '20kg baggage']],
-            ['id' => 'jt-018', 'airline' => 'Lion Air', 'number' => 'JT 018', 'from' => 'CGK', 'fromCity' => 'Jakarta', 'to' => 'DPS', 'toCity' => 'Bali', 'depart' => '14:10', 'arrive' => '17:15', 'duration' => '2h 05m', 'stops' => 'Non-stop', 'price' => '1.180.000', 'original_price' => '1.180.000', 'amenities' => ['15kg baggage']],
-        ];
     }
 
     private function posts(): array
