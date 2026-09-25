@@ -33,5 +33,11 @@ class DatabaseSeeder extends Seeder
             NearbyPlaceSeeder::class,
             ReviewSeeder::class,
         ]);
+
+        $this->call([
+            AirlineSeeder::class,
+            FlightSeeder::class,
+            FlightOfferSeeder::class,
+        ]);
     }
 }
