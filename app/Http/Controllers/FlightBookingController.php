@@ -122,12 +122,20 @@ class FlightBookingController extends Controller
                 'service_fee' => $breakdown['service_fee'],
                 'discount' => $breakdown['discount'],
                 'total' => $breakdown['total'],
-                'status' => 'pending',
+                'status' => 'awaiting_payment',
                 'contact_email' => $validated['contact_email'],
                 'contact_phone' => $validated['contact_phone'],
             ]);
 
             $booking->passengerDetails()->createMany($validated['passengers']);
+
+            $booking->payments()->create([
+                'payment_code' => 'PAYF-'.strtoupper(Str::random(8)),
+                'method' => $validated['payment_method'],
+                'amount' => $breakdown['total'],
+                'status' => 'pending',
+                'expired_at' => now()->addHours(24),
+            ]);
 
             return $booking;
         });
@@ -142,15 +150,53 @@ class FlightBookingController extends Controller
         session()->forget('pending_flight_booking');
 
         return redirect()
-            ->route('flight-bookings.confirmation', $booking)
+            ->route('flight-bookings.payment', $booking)
             ->with('status', 'Booking flight berhasil dibuat! Kode booking: '.$booking->booking_code);
+    }
+
+    /**
+     * Halaman pembayaran mock (spec section 37) — belum terhubung ke
+     * payment gateway asli, cuma simulasi Success/Failed buat kebutuhan
+     * demo/tugas.
+     */
+    public function payment(FlightBooking $flightBooking): View
+    {
+        abort_unless($flightBooking->user_id === Auth::id(), 403);
+
+        $flightBooking->load('payments');
+        $payment = $flightBooking->payments()->latest()->first();
+
+        return view('flight-bookings.payment', ['booking' => $flightBooking, 'payment' => $payment]);
+    }
+
+    /**
+     * Tombol "Simulate Successful/Failed Payment" — jangan diekspos di
+     * production (spec section 37).
+     */
+    public function simulatePayment(Request $request, FlightBooking $flightBooking): RedirectResponse
+    {
+        abort_unless($flightBooking->user_id === Auth::id(), 403);
+        abort_if(app()->environment('production'), 404);
+
+        $request->validate(['result' => ['required', 'in:success,failed']]);
+
+        $payment = $flightBooking->payments()->latest()->first();
+
+        if ($request->input('result') === 'success') {
+            $payment->update(['status' => 'paid', 'paid_at' => now()]);
+            $flightBooking->update(['status' => 'confirmed']);
+        } else {
+            $payment->update(['status' => 'failed']);
+        }
+
+        return redirect()->route('flight-bookings.confirmation', $flightBooking);
     }
 
     public function confirmation(FlightBooking $flightBooking): View
     {
         abort_unless($flightBooking->user_id === Auth::id(), 403);
 
-        $flightBooking->load(['flightOffer.departureFlight.airline', 'flightOffer.returnFlight.airline', 'passengerDetails']);
+        $flightBooking->load(['flightOffer.departureFlight.airline', 'flightOffer.returnFlight.airline', 'passengerDetails', 'payments']);
 
         return view('flight-bookings.confirmation', ['booking' => $flightBooking]);
     }

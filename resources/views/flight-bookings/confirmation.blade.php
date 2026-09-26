@@ -34,10 +34,13 @@
         <span class="rating">{{ ucfirst($booking->status) }}</span>
     </div>
 
-    <div class="alert alert-info small text-start">
-        Kursi kamu sudah kami tahan. Instruksi & konfirmasi pembayaran akan segera menyusul —
-        fitur pembayaran flight masih dalam tahap pengembangan.
-    </div>
+    @if($booking->status === 'confirmed')
+        <div class="alert alert-success small text-start">Pembayaran berhasil. Booking kamu terkonfirmasi.</div>
+    @else
+        <div class="alert alert-info small text-start">
+            Kursi kamu sudah kami tahan. <a href="{{ route('flight-bookings.payment', $booking) }}">Lanjut ke pembayaran</a>.
+        </div>
+    @endif
 </div>
 </main>
 @endsection

@@ -85,11 +85,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/hotel-checkout', [HotelBookingController::class, 'checkout'])->name('hotel-checkout.show');
     Route::post('/hotel-checkout/confirm', [HotelBookingController::class, 'confirm'])->name('hotel-bookings.confirm');
     Route::get('/hotel-bookings/{hotelBooking}/confirmation', [HotelBookingController::class, 'confirmation'])->name('hotel-bookings.confirmation');
+    Route::get('/hotel-bookings/{hotelBooking}/payment', [HotelBookingController::class, 'payment'])->name('hotel-bookings.payment');
+    Route::post('/hotel-bookings/{hotelBooking}/payment/simulate', [HotelBookingController::class, 'simulatePayment'])->name('hotel-bookings.payment.simulate');
 
     Route::post('/flight-bookings', [FlightBookingController::class, 'store'])->name('flight-bookings.store');
     Route::get('/flight-checkout', [FlightBookingController::class, 'checkout'])->name('flight-checkout.show');
     Route::post('/flight-checkout/confirm', [FlightBookingController::class, 'confirm'])->name('flight-bookings.confirm');
     Route::get('/flight-bookings/{flightBooking}/confirmation', [FlightBookingController::class, 'confirmation'])->name('flight-bookings.confirmation');
+    Route::get('/flight-bookings/{flightBooking}/payment', [FlightBookingController::class, 'payment'])->name('flight-bookings.payment');
+    Route::post('/flight-bookings/{flightBooking}/payment/simulate', [FlightBookingController::class, 'simulatePayment'])->name('flight-bookings.payment.simulate');
 });
 
 Route::post('/webhooks/midtrans', [PaymentController::class, 'handleMidtransCallback'])->name('webhooks.midtrans');

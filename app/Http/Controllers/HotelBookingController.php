@@ -170,7 +170,7 @@ class HotelBookingController extends Controller
                 'service_fee' => $breakdown['service_fee'],
                 'discount' => $breakdown['discount'],
                 'total' => $breakdown['total'],
-                'status' => 'pending',
+                'status' => 'awaiting_payment',
                 'guest_name' => $validated['guest_name'],
                 'guest_email' => $validated['guest_email'],
                 'guest_phone' => $validated['guest_phone'],
@@ -186,6 +186,14 @@ class HotelBookingController extends Controller
                 'subtotal' => $breakdown['subtotal'],
             ]);
 
+            $booking->payments()->create([
+                'payment_code' => 'PAYH-'.strtoupper(Str::random(8)),
+                'method' => $validated['payment_method'],
+                'amount' => $breakdown['total'],
+                'status' => 'pending',
+                'expired_at' => now()->addHours(24),
+            ]);
+
             return $booking;
         });
 
@@ -199,8 +207,46 @@ class HotelBookingController extends Controller
         session()->forget('pending_hotel_booking');
 
         return redirect()
-            ->route('hotel-bookings.confirmation', $booking)
+            ->route('hotel-bookings.payment', $booking)
             ->with('status', 'Booking hotel berhasil dibuat! Kode booking: '.$booking->booking_code);
+    }
+
+    /**
+     * Halaman pembayaran mock (spec section 37) — belum terhubung ke
+     * payment gateway asli, cuma simulasi Success/Failed buat kebutuhan
+     * demo/tugas.
+     */
+    public function payment(HotelBooking $hotelBooking): View
+    {
+        abort_unless($hotelBooking->user_id === Auth::id(), 403);
+
+        $hotelBooking->load('payments');
+        $payment = $hotelBooking->payments()->latest()->first();
+
+        return view('hotel-bookings.payment', ['booking' => $hotelBooking, 'payment' => $payment]);
+    }
+
+    /**
+     * Tombol "Simulate Successful/Failed Payment" — jangan diekspos di
+     * production (spec section 37).
+     */
+    public function simulatePayment(Request $request, HotelBooking $hotelBooking): RedirectResponse
+    {
+        abort_unless($hotelBooking->user_id === Auth::id(), 403);
+        abort_if(app()->environment('production'), 404);
+
+        $request->validate(['result' => ['required', 'in:success,failed']]);
+
+        $payment = $hotelBooking->payments()->latest()->first();
+
+        if ($request->input('result') === 'success') {
+            $payment->update(['status' => 'paid', 'paid_at' => now()]);
+            $hotelBooking->update(['status' => 'confirmed']);
+        } else {
+            $payment->update(['status' => 'failed']);
+        }
+
+        return redirect()->route('hotel-bookings.confirmation', $hotelBooking);
     }
 
     /**
@@ -212,7 +258,7 @@ class HotelBookingController extends Controller
     {
         abort_unless($hotelBooking->user_id === Auth::id(), 403);
 
-        $hotelBooking->load(['hotel', 'bookingRooms.roomType', 'bookingRooms.ratePlan']);
+        $hotelBooking->load(['hotel', 'bookingRooms.roomType', 'bookingRooms.ratePlan', 'payments']);
 
         return view('hotel-bookings.confirmation', ['booking' => $hotelBooking]);
     }
