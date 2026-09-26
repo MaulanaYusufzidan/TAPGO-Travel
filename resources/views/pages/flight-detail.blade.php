@@ -59,15 +59,33 @@
             @if($related->isNotEmpty())
                 <section class="detail-panel mb-0">
                     <h2>Similar Flights</h2>
+                    @php
+                        $cityImages = [
+                            'Bali' => 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=500&q=80',
+                            'Surabaya' => 'https://images.unsplash.com/photo-1555899434-94d1368aa7af?auto=format&fit=crop&w=500&q=80',
+                            'Yogyakarta' => 'https://images.unsplash.com/photo-1596422846543-75c6fc197f07?auto=format&fit=crop&w=500&q=80',
+                            'Medan' => 'https://images.unsplash.com/photo-1591474200742-8e512e6f98f8?auto=format&fit=crop&w=500&q=80',
+                            'Makassar' => 'https://images.unsplash.com/photo-1580746738099-1a9358a56b8f?auto=format&fit=crop&w=500&q=80',
+                            'Lombok' => 'https://images.unsplash.com/photo-1559628233-100c798642d4?auto=format&fit=crop&w=500&q=80',
+                            'Singapore' => 'https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=500&q=80',
+                            'Kuala Lumpur' => 'https://images.unsplash.com/photo-1596422846543-75c6fc197f07?auto=format&fit=crop&w=500&q=80',
+                            'Jakarta' => 'https://images.unsplash.com/photo-1555899434-94d1368aa7af?auto=format&fit=crop&w=500&q=80',
+                        ];
+                        $cityFallback = 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=500&q=80';
+                    @endphp
                     <div class="row g-3">
                         @foreach($related as $item)
+                            @php $destCity = $item->departureFlight->destination_city; @endphp
                             <div class="col-md-6">
-                                <a href="{{ route('flights.show', $item) }}" class="text-decoration-none">
-                                    <div class="border rounded p-2 h-100" style="border-color:#e3e8ec !important; color:inherit;">
-                                        <strong class="d-block small">{{ $item->departureFlight->origin_city }} → {{ $item->departureFlight->destination_city }}</strong>
-                                        <span class="small text-muted">From Rp {{ number_format($item->final_price, 0, ',', '.') }}</span>
+                                <article class="travel-card h-100">
+                                    <a href="{{ route('flights.show', $item) }}" class="travel-card__image">
+                                        <img src="{{ $cityImages[$destCity] ?? $cityFallback }}" alt="{{ $destCity }}" onerror="this.onerror=null;this.src='{{ $cityFallback }}'">
+                                    </a>
+                                    <div class="travel-card__body">
+                                        <h3 class="h6 mb-1"><a href="{{ route('flights.show', $item) }}">{{ $item->departureFlight->origin_city }} → {{ $destCity }}</a></h3>
+                                        <p class="small fw-semibold mb-0" style="color:#17233b;">From Rp {{ number_format($item->final_price, 0, ',', '.') }}</p>
                                     </div>
-                                </a>
+                                </article>
                             </div>
                         @endforeach
                     </div>

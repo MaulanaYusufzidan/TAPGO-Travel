@@ -143,6 +143,13 @@
                         <span>Total Price</span>
                         <span style="color:#1968e0;">Rp {{ number_format($breakdown['total'], 0, ',', '.') }}</span>
                     </div>
+                    <hr>
+                    <label class="small text-muted">Have a Coupon Code?</label>
+                    <div class="d-flex gap-2 mb-3">
+                        <input type="text" class="form-control form-control-sm" placeholder="Enter code" disabled>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" disabled>Apply</button>
+                    </div>
+                    <p class="small text-muted mb-3"><em>Coupon belum aktif — placeholder buat fase selanjutnya.</em></p>
                     <button type="submit" class="btn btn-primary w-100">Submit & Proceed for Payment</button>
                 </div>
             </div>
