@@ -6,10 +6,25 @@
     $dep = $offer->departureFlight;
     $ret = $offer->returnFlight;
     $finalPrice = $offer->final_price;
+    $cityImages = [
+        'Bali' => 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=1200&q=80',
+        'Surabaya' => 'https://images.unsplash.com/photo-1555899434-94d1368aa7af?auto=format&fit=crop&w=1200&q=80',
+        'Yogyakarta' => 'https://images.unsplash.com/photo-1596422846543-75c6fc197f07?auto=format&fit=crop&w=1200&q=80',
+        'Medan' => 'https://images.unsplash.com/photo-1591474200742-8e512e6f98f8?auto=format&fit=crop&w=1200&q=80',
+        'Makassar' => 'https://images.unsplash.com/photo-1580746738099-1a9358a56b8f?auto=format&fit=crop&w=1200&q=80',
+        'Lombok' => 'https://images.unsplash.com/photo-1559628233-100c798642d4?auto=format&fit=crop&w=1200&q=80',
+        'Singapore' => 'https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=1200&q=80',
+        'Kuala Lumpur' => 'https://images.unsplash.com/photo-1596422846543-75c6fc197f07?auto=format&fit=crop&w=1200&q=80',
+    ];
+    $heroFallback = 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&q=80';
+    $heroImage = $cityImages[$dep->destination_city] ?? $heroFallback;
 @endphp
 <main class="marketplace-page">
 <div class="container">
     <x-breadcrumb :links="[['label' => 'Flights', 'url' => route('flights.index')]]" current="{{ $dep->origin_city }} to {{ $dep->destination_city }}" />
+    <div style="height:220px; border-radius:.6rem; overflow:hidden; margin-bottom:1.25rem;">
+        <img src="{{ $heroImage }}" alt="{{ $dep->destination_city }}" style="width:100%; height:100%; object-fit:cover; display:block;" onerror="this.onerror=null;this.src='{{ $heroFallback }}'">
+    </div>
     <div class="row g-4">
         <div class="col-lg-8">
             <section class="detail-panel">
@@ -47,12 +62,37 @@
             </section>
 
             <section class="detail-panel">
+                <h2>Overview</h2>
+                <p class="text-muted mb-0">
+                    Nikmati penerbangan {{ $dep->travel_class }} dari {{ $dep->origin_city }} ke {{ $dep->destination_city }}
+                    bersama {{ $dep->airline->name }}, durasi tempuh {{ $dep->duration_label }} ({{ $dep->stops_label }})
+                    dengan bagasi hingga {{ $dep->baggage_kg }}kg.
+                    @if($offer->isRoundTrip())
+                        Penerbangan pulang tersedia {{ $ret->departure_at->diffInDays($dep->departure_at) }} hari setelah keberangkatan.
+                    @endif
+                </p>
+            </section>
+
+            <section class="detail-panel">
                 <h2>Flight information</h2>
                 <div class="info-grid">
                     <div><strong>Cabin class</strong><span>{{ $dep->travel_class }}</span></div>
                     <div><strong>Checked baggage</strong><span>{{ $dep->baggage_kg }} kg included</span></div>
                     <div><strong>Seats left</strong><span>{{ $offer->seats_available }} seats on this fare</span></div>
                     <div><strong>Check-in</strong><span>Available 24 hours before departure</span></div>
+                </div>
+            </section>
+
+            <section class="detail-panel">
+                <h2>Fare Rules</h2>
+                <div class="fare-row">
+                    <div><strong>Baggage Allowance</strong><p>{{ $dep->baggage_kg }}kg checked + 7kg cabin bag per passenger.</p></div>
+                </div>
+                <div class="fare-row">
+                    <div><strong>Cancellation</strong><p>{{ $offer->refundable ? 'Refundable — dikenakan biaya administrasi.' : 'Non-refundable — tiket tidak dapat dibatalkan.' }}</p></div>
+                </div>
+                <div class="fare-row">
+                    <div><strong>Reschedule</strong><p>{{ $offer->refundable ? 'Gratis 1x reschedule hingga 24 jam sebelum keberangkatan.' : 'Reschedule dikenakan biaya sesuai ketentuan maskapai.' }}</p></div>
                 </div>
             </section>
 
