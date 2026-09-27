@@ -8,6 +8,7 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\DestinationController;
 use App\Http\Controllers\FlightBookingController;
 use App\Http\Controllers\FlightController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HotelBookingController;
 use App\Http\Controllers\HotelController;
 use App\Http\Controllers\InvoiceController;
@@ -15,28 +16,9 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\TripController;
 use App\Http\Controllers\PageController;
-use App\Models\Destination;
-use App\Models\Trip;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    $featuredDestinations = collect();
-    $featuredTrips = collect();
-
-    // Keep the marketing page available during a temporary database outage.
-    // In normal operation these are populated from the existing marketplace data.
-    try {
-        $featuredDestinations = Destination::published()->featured()->take(6)->get();
-        $featuredTrips = Trip::with(['destination', 'images'])->published()->featured()->take(6)->get();
-    } catch (\Illuminate\Database\QueryException) {
-        // The view has intentional empty states for this condition.
-    }
-
-    return view('home', [
-        'featuredDestinations' => $featuredDestinations,
-        'featuredTrips' => $featuredTrips,
-    ]);
-})->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
