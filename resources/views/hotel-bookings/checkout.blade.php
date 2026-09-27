@@ -57,30 +57,17 @@
                     <div class="row g-2">
                         @php
                             $paymentMethods = [
-                                'qris' => ['label' => 'QRIS', 'icon' => 'qris'],
-                                'bank_transfer' => ['label' => 'Bank Transfer', 'icon' => 'bank'],
-                                'e_wallet' => ['label' => 'E-Wallet', 'icon' => 'wallet'],
-                                'credit_card' => ['label' => 'Credit / Debit Card', 'icon' => 'card'],
+                                'qris' => ['label' => 'QRIS', 'photo' => 'https://images.unsplash.com/photo-1621504450181-5d356f61d307?auto=format&fit=crop&w=200&q=80'],
+                                'bank_transfer' => ['label' => 'Bank Transfer', 'photo' => 'https://images.unsplash.com/photo-1601597111158-2fceff292cdc?auto=format&fit=crop&w=200&q=80'],
+                                'e_wallet' => ['label' => 'E-Wallet', 'photo' => 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=200&q=80'],
+                                'credit_card' => ['label' => 'Credit / Debit Card', 'photo' => 'https://images.unsplash.com/photo-1556742502-ec7c0e9f34b1?auto=format&fit=crop&w=200&q=80'],
                             ];
                         @endphp
                         @foreach($paymentMethods as $value => $method)
                             <div class="col-6 col-md-3">
-                                <label class="payment-method-option" style="display:block; border:1px solid #e9edf0; border-radius:.6rem; padding:.75rem; text-align:center; cursor:pointer;">
+                                <label class="payment-method-option" style="display:block; border:1px solid #e9edf0; border-radius:.6rem; padding:.6rem; text-align:center; cursor:pointer;">
                                     <input type="radio" name="payment_method" value="{{ $value }}" @checked(old('payment_method') === $value) required style="display:block; margin: 0 auto .4rem;">
-                                    @switch($method['icon'])
-                                        @case('qris')
-                                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" style="margin:0 auto;display:block;"><rect x="2" y="2" width="7" height="7" rx="1" stroke="#17233b" stroke-width="1.6"/><rect x="15" y="2" width="7" height="7" rx="1" stroke="#17233b" stroke-width="1.6"/><rect x="2" y="15" width="7" height="7" rx="1" stroke="#17233b" stroke-width="1.6"/><rect x="4.3" y="4.3" width="2.4" height="2.4" fill="#17233b"/><rect x="17.3" y="4.3" width="2.4" height="2.4" fill="#17233b"/><rect x="4.3" y="17.3" width="2.4" height="2.4" fill="#17233b"/><rect x="15" y="15" width="3" height="3" fill="#17233b"/><rect x="19" y="15" width="3" height="3" fill="#17233b"/><rect x="15" y="19" width="3" height="3" fill="#17233b"/><rect x="19" y="19" width="3" height="3" fill="#17233b"/></svg>
-                                            @break
-                                        @case('bank')
-                                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" style="margin:0 auto;display:block;"><path d="M2 9L12 3l10 6" stroke="#17233b" stroke-width="1.6" stroke-linejoin="round"/><rect x="4" y="9" width="16" height="10" stroke="#17233b" stroke-width="1.6"/><path d="M2 21h20" stroke="#17233b" stroke-width="1.6"/><path d="M7 12v4M12 12v4M17 12v4" stroke="#17233b" stroke-width="1.6"/></svg>
-                                            @break
-                                        @case('wallet')
-                                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" style="margin:0 auto;display:block;"><rect x="2" y="6" width="20" height="14" rx="2" stroke="#17233b" stroke-width="1.6"/><path d="M2 10h20" stroke="#17233b" stroke-width="1.6"/><circle cx="17" cy="14.5" r="1.4" fill="#17233b"/></svg>
-                                            @break
-                                        @case('card')
-                                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" style="margin:0 auto;display:block;"><rect x="2" y="5" width="20" height="14" rx="2" stroke="#17233b" stroke-width="1.6"/><path d="M2 10h20" stroke="#17233b" stroke-width="1.6"/><path d="M5 15h6" stroke="#17233b" stroke-width="1.6"/></svg>
-                                            @break
-                                    @endswitch
+                                    <img src="{{ $method['photo'] }}" alt="{{ $method['label'] }}" style="width:100%; height:44px; object-fit:cover; border-radius:.4rem; display:block;">
                                     <span class="small mt-1 d-block">{{ $method['label'] }}</span>
                                 </label>
                             </div>
