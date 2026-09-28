@@ -16,6 +16,7 @@ class TripController extends Controller
 
         $trips = Trip::query()
             ->with(['destination', 'category'])
+            ->withCount(['itineraries', 'inclusions'])
             ->published()
             ->search($request->get('q'))
             ->when($request->filled('destination'), function ($q) use ($request) {
@@ -46,7 +47,7 @@ class TripController extends Controller
     {
         abort_unless($trip->status === 'published', 404);
 
-        $trip->load(['destination', 'category', 'images', 'itineraries', 'inclusions', 'exclusions']);
+        $trip->load(['destination', 'category', 'images', 'itineraries', 'inclusions', 'exclusions', 'reviews' => fn ($q) => $q->published()->with('user')->latest()]);
 
         $schedules = $trip->schedules()
             ->available()

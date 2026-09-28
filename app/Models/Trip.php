@@ -75,6 +75,11 @@ class Trip extends Model
         return $this->hasMany(Schedule::class);
     }
 
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(TripReview::class);
+    }
+
     public function scopePublished($query)
     {
         return $query->where('status', 'published');

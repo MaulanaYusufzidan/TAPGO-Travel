@@ -19,7 +19,7 @@
             <label for="q">Search</label>
             <input type="text" name="q" id="q" class="form-control" placeholder="Trip name..." value="{{ $filters['q'] ?? '' }}">
         </div>
-        <div class="col-md-3">
+        <div class="col-md-5">
             <label for="destination">Destination</label>
             <select name="destination" id="destination" class="form-select">
                 <option value="">All destinations</option>
@@ -28,17 +28,7 @@
                 @endforeach
             </select>
         </div>
-        <div class="col-md-3">
-            <label for="sort">Sort by</label>
-            <select name="sort" id="sort" class="form-select">
-                <option value="recommended" @selected(($filters['sort'] ?? 'recommended') === 'recommended')>Recommended</option>
-                <option value="price_asc" @selected(($filters['sort'] ?? '') === 'price_asc')>Price: low to high</option>
-                <option value="price_desc" @selected(($filters['sort'] ?? '') === 'price_desc')>Price: high to low</option>
-                <option value="rating" @selected(($filters['sort'] ?? '') === 'rating')>Guest rating</option>
-                <option value="popularity" @selected(($filters['sort'] ?? '') === 'popularity')>Popularity</option>
-            </select>
-        </div>
-        <div class="col-md-2 d-grid">
+        <div class="col-md-3 d-grid">
             <button type="submit" class="btn btn-warning">🔍 Search</button>
         </div>
     </form>
@@ -81,7 +71,14 @@
 
         <div class="col-lg-9">
             <div class="results-toolbar">
-                <span><strong>{{ $trips->total() }} trips found</strong></span>
+                <span><strong>Showing {{ $trips->total() }} search results</strong></span>
+                @php $currentSort = $filters['sort'] ?? 'recommended'; @endphp
+                <div class="btn-group" role="group" aria-label="Sort trips">
+                    @foreach(['recommended' => 'Our Trending', 'popularity' => 'Most Popular', 'price_asc' => 'Lowest Price'] as $value => $label)
+                        <a href="{{ request()->fullUrlWithQuery(['sort' => $value]) }}"
+                           class="btn btn-sm {{ $currentSort === $value ? 'btn-primary' : 'btn-outline-secondary' }}">{{ $label }}</a>
+                    @endforeach
+                </div>
             </div>
 
             @if ($trips->isEmpty())
