@@ -4,11 +4,13 @@
         <div class="row"><div class="col-lg-9 col-xl-8 mx-auto text-center text-lg-start"><p class="hero-kicker">Made for meaningful journeys</p><h1>Explore the world <u>around you</u></h1><p class="hero-copy mx-auto mx-lg-0">Take a little break from the work stress of everyday. Discover, plan a trip, and explore beautiful destinations across Indonesia and beyond.</p></div></div>
 
         <div class="row"><div class="col-xl-11 mx-auto">
-            <div class="hero-tabs mb-3 mx-auto d-flex justify-content-center" role="tablist" aria-label="Search category">
+            <div class="text-center">
+            <div class="hero-tabs mb-3" role="tablist" aria-label="Search category">
                 <button type="button" class="active" data-target="hotels" data-action="{{ route('hotels.index') }}" data-field="Going To" data-placeholder="Search a city or hotel">🏨 Hotels</button>
                 <button type="button" data-target="flights" data-action="{{ route('flights.index') }}" data-field="Going To" data-placeholder="Search a destination">✈️ Flights</button>
                 <button type="button" data-target="trips" data-action="{{ route('trips.index') }}" data-field="Where to?" data-placeholder="Search a destination or experience">🏝️ Trips</button>
                 <button type="button" data-target="destinations" data-action="{{ route('destinations.index') }}" data-field="Destination" data-placeholder="Search a destination">📍 Destinations</button>
+            </div>
             </div>
             <form id="hero-search-form" action="{{ route('hotels.index') }}" method="GET" class="tapgo-hero__search row g-0 align-items-stretch">
                 <div class="col-md-5 search-field"><label for="hero-destination" id="hero-destination-label">Going To</label><input type="text" name="destination" id="hero-destination" placeholder="Search a city or hotel"></div>

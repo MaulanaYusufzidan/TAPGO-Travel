@@ -9,11 +9,11 @@
         @if($trip->is_featured)<span class="card-label">Handpicked</span>@endif
     </a>
     <div class="travel-card__body">
-        <div class="amenity-icons mb-2">
-            <span>📅 {{ $trip->duration }}</span>
-            <span>🗺️ {{ $trip->itineraries_count ?? $trip->itineraries->count() }} stops</span>
-            <span>✅ {{ $trip->inclusions_count ?? $trip->inclusions->count() }} inclusions</span>
-            <span>👥 {{ $trip->min_group_size }}-{{ $trip->max_group_size }} pax</span>
+        <div class="row text-center g-0 border-bottom pb-2 mb-2">
+            <div class="col-3"><span class="d-block">📅</span><small class="text-muted">{{ $trip->duration }}</small></div>
+            <div class="col-3"><span class="d-block">🗺️</span><small class="text-muted">{{ $trip->itineraries_count ?? $trip->itineraries->count() }} stops</small></div>
+            <div class="col-3"><span class="d-block">✅</span><small class="text-muted">{{ $trip->inclusions_count ?? $trip->inclusions->count() }} incl.</small></div>
+            <div class="col-3"><span class="d-block">👥</span><small class="text-muted">{{ $trip->min_group_size }}-{{ $trip->max_group_size }} pax</small></div>
         </div>
         <div class="d-flex justify-content-between gap-2 align-items-center mb-2">
             <span class="small text-muted">{{ $trip->destination->name }} · {{ $trip->category->name ?? 'Tour' }}</span>

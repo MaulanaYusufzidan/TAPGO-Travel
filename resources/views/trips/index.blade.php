@@ -33,8 +33,19 @@
         </div>
     </form>
 
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <button type="button" class="btn btn-dark btn-sm" data-bs-toggle="collapse" data-bs-target="#tripFilters">☰ Filter</button>
+        @php $currentSort = $filters['sort'] ?? 'recommended'; @endphp
+        <div class="btn-group" role="group" aria-label="Sort trips">
+            @foreach(['recommended' => 'Our Trending', 'popularity' => 'Most Popular', 'price_asc' => 'Lowest Price'] as $value => $label)
+                <a href="{{ request()->fullUrlWithQuery(['sort' => $value]) }}"
+                   class="btn btn-sm {{ $currentSort === $value ? 'btn-primary' : 'btn-outline-secondary' }}">{{ $label }}</a>
+            @endforeach
+        </div>
+    </div>
+
     <div class="row g-4">
-        <div class="col-lg-3">
+        <div class="col-lg-3 collapse show" id="tripFilters">
             <aside class="filter-sidebar">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <strong>Filter by</strong>
@@ -72,13 +83,6 @@
         <div class="col-lg-9">
             <div class="results-toolbar">
                 <span><strong>Showing {{ $trips->total() }} search results</strong></span>
-                @php $currentSort = $filters['sort'] ?? 'recommended'; @endphp
-                <div class="btn-group" role="group" aria-label="Sort trips">
-                    @foreach(['recommended' => 'Our Trending', 'popularity' => 'Most Popular', 'price_asc' => 'Lowest Price'] as $value => $label)
-                        <a href="{{ request()->fullUrlWithQuery(['sort' => $value]) }}"
-                           class="btn btn-sm {{ $currentSort === $value ? 'btn-primary' : 'btn-outline-secondary' }}">{{ $label }}</a>
-                    @endforeach
-                </div>
             </div>
 
             @if ($trips->isEmpty())
