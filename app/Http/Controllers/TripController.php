@@ -25,6 +25,9 @@ class TripController extends Controller
             ->when($request->filled('category'), function ($q) use ($request) {
                 $q->whereHas('category', fn ($c) => $c->where('slug', $request->get('category')));
             })
+            ->when($request->filled('date'), function ($q) use ($request) {
+                $q->whereHas('schedules', fn ($s) => $s->where('date', '>=', $request->get('date'))->available());
+            })
             ->when($request->filled('price_min'), fn ($q) => $q->where('base_price', '>=', $request->get('price_min')))
             ->when($request->filled('price_max'), fn ($q) => $q->where('base_price', '<=', $request->get('price_max')))
             ->when($sort === 'price_asc', fn ($q) => $q->orderBy('base_price', 'asc'))
@@ -39,7 +42,7 @@ class TripController extends Controller
             'trips' => $trips,
             'destinations' => Destination::published()->orderBy('name')->get(),
             'categories' => Category::orderBy('name')->get(),
-            'filters' => $request->only(['q', 'destination', 'category', 'price_min', 'price_max', 'sort']),
+            'filters' => $request->only(['q', 'destination', 'category', 'date', 'price_min', 'price_max', 'sort']),
         ]);
     }
 

@@ -21,7 +21,10 @@
                 @endif
             </p>
         </div>
-        <button type="button" class="btn btn-outline-primary btn-sm" onclick="navigator.clipboard && navigator.clipboard.writeText(window.location.href); this.textContent='Link copied ✓';">↗ Share</button>
+        <div class="d-flex gap-2">
+            <button type="button" class="btn btn-outline-primary btn-sm" title="Bookmark (belum tersambung ke akun)">🔖 Bookmark</button>
+            <button type="button" class="btn btn-outline-primary btn-sm" onclick="navigator.clipboard && navigator.clipboard.writeText(window.location.href); this.textContent='Link copied ✓';">↗ Share</button>
+        </div>
     </div>
 
     {{-- Gallery --}}
@@ -64,8 +67,7 @@
             <div class="tapgo-tabs" role="tablist">
                 <a href="#overview" class="active" data-tab-target="overview">Overview</a>
                 <a href="#itinerary" data-tab-target="itinerary">Itinerary</a>
-                <a href="#inclusions" data-tab-target="inclusions">Inclusions &amp; Exclusions</a>
-                <a href="#reviews" data-tab-target="reviews">Reviews</a>
+                <a href="#hotels-transfers" data-tab-target="hotels-transfers">Hotels &amp; Transfers</a>
             </div>
 
             <section class="detail-panel tab-pane" id="overview">
@@ -104,8 +106,37 @@
                 </section>
             @endif
 
+            @php
+                $hotelKeywords = ['hotel', 'akomodasi', 'penginapan', 'bintang', 'kamar', 'resort'];
+                $transferKeywords = ['transfer', 'transportasi', 'antar', 'jemput', 'shuttle', 'ber-ac', 'bus', 'kereta', 'pesawat', 'airfare'];
+                $hotelItems = $trip->inclusions->filter(fn ($i) => collect($hotelKeywords)->contains(fn ($k) => str_contains(strtolower($i->item), $k)));
+                $transferItems = $trip->inclusions->filter(fn ($i) => collect($transferKeywords)->contains(fn ($k) => str_contains(strtolower($i->item), $k)));
+            @endphp
+            <section class="detail-panel tab-pane" id="hotels-transfers">
+                <h2>Hotels &amp; Transfers</h2>
+                @if ($hotelItems->isNotEmpty())
+                    <h3 class="h6 fw-semibold mb-2">Accommodation</h3>
+                    <ul class="list-unstyled mb-3">
+                        @foreach ($hotelItems as $item)
+                            <li class="mb-2">🏨 {{ $item->item }}</li>
+                        @endforeach
+                    </ul>
+                @endif
+                @if ($transferItems->isNotEmpty())
+                    <h3 class="h6 fw-semibold mb-2">Transfers</h3>
+                    <ul class="list-unstyled mb-0">
+                        @foreach ($transferItems as $item)
+                            <li class="mb-2">🚌 {{ $item->item }}</li>
+                        @endforeach
+                    </ul>
+                @endif
+                @if ($hotelItems->isEmpty() && $transferItems->isEmpty())
+                    <p class="text-muted mb-0">Detail akomodasi & transfer belum dicantumkan untuk trip ini — lihat Inclusions di bawah untuk gambaran lengkap.</p>
+                @endif
+            </section>
+
             @if ($trip->inclusions->isNotEmpty() || $trip->exclusions->isNotEmpty())
-                <section class="detail-panel tab-pane" id="inclusions">
+                <section class="detail-panel" id="inclusions">
                     <h2>Inclusions &amp; Exclusions</h2>
                     <div class="row">
                         @if ($trip->inclusions->isNotEmpty())
@@ -132,7 +163,7 @@
                 </section>
             @endif
 
-            <section class="detail-panel tab-pane" id="reviews">
+            <section class="detail-panel" id="reviews">
                 <h2>Guest Reviews</h2>
                 @if ($trip->reviews->isNotEmpty())
                     <div class="review-score">
@@ -169,8 +200,18 @@
         <div class="col-lg-4">
             <div class="booking-card" id="schedule-picker">
                 @if ($trip->base_price)
-                    <p class="text-muted small mb-1">Starting from</p>
-                    <p class="h3 fw-bold mb-3" style="color:#17233b;">Rp {{ number_format($trip->base_price, 0, ',', '.') }}<span class="fs-6 text-muted fw-normal"> / person</span></p>
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            @if ($trip->discount_percentage)
+                                <span class="price-was d-block">Rp {{ number_format($trip->base_price, 0, ',', '.') }}</span>
+                            @endif
+                            <p class="h3 fw-bold mb-0" style="color:#17233b;">Rp {{ number_format($trip->priceAfterDiscount(), 0, ',', '.') }}<span class="fs-6 text-muted fw-normal"> / person</span></p>
+                        </div>
+                        @if ($trip->discount_percentage)
+                            <span class="badge bg-success-subtle text-success">{{ $trip->discount_percentage }}% OFF</span>
+                        @endif
+                    </div>
+                    <p class="small text-muted mb-3">*Excluding applicable taxes</p>
                 @endif
 
                 @if ($schedules->isEmpty())
@@ -207,7 +248,7 @@
                             <span id="schedule-total">Rp 0</span>
                         </div>
 
-                        <button type="submit" class="btn btn-primary w-100">Pesan Sekarang</button>
+                        <button type="submit" class="btn btn-primary w-100">Proceed to Book Online</button>
                     </form>
                 @endif
 
