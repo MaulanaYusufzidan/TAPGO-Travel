@@ -99,9 +99,44 @@ class PageController extends Controller
     private function posts(): array
     {
         return [
-            ['category' => 'Destination Guide', 'date' => '12 Sep 2026', 'title' => 'A considered guide to Bali beyond the beach', 'image' => 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=900&q=85'],
-            ['category' => 'Travel Tips', 'date' => '04 Sep 2026', 'title' => 'How to make a long weekend feel like a true escape', 'image' => 'https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=900&q=85'],
-            ['category' => 'City Guide', 'date' => '28 Aug 2026', 'title' => 'The art, food, and stories of Yogyakarta', 'image' => 'https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=900&q=85'],
+            [
+                'slug' => 'considered-guide-to-bali-beyond-the-beach',
+                'category' => 'Destination Guide',
+                'date' => '12 Sep 2026',
+                'title' => 'A considered guide to Bali beyond the beach',
+                'image' => 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=900&q=85',
+                'excerpt' => 'Discover useful details, local perspective, and a more considered way to travel.',
+                'content' => "Bali is far bigger than its beaches. Head inland to Ubud for rice-terrace walks and slow mornings, or north to Munduk for waterfalls without the crowds.\n\nStart your day early — the light is softer, the roads are quieter, and temples feel like they belong to you alone. Pair a cultural stop (a village temple ceremony, a traditional market) with a nature stop (a trek, a swim) so each day has contrast.\n\nWhen it's time to rest, choose accommodation close to what you actually came for rather than the busiest strip — TAPGO's hotel filters make it easy to search by city and amenity so you spend less time commuting and more time exploring.",
+            ],
+            [
+                'slug' => 'make-a-long-weekend-feel-like-a-true-escape',
+                'category' => 'Travel Tips',
+                'date' => '04 Sep 2026',
+                'title' => 'How to make a long weekend feel like a true escape',
+                'image' => 'https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=900&q=85',
+                'excerpt' => 'Discover useful details, local perspective, and a more considered way to travel.',
+                'content' => "Short trips can feel rushed, but a little planning changes everything. Pick a destination within a 2-hour flight or drive so travel time doesn't eat your weekend.\n\nBook your first night in advance so you land without decisions to make, then leave the rest loose — the best moments on a short trip are usually the ones you didn't schedule.\n\nUse TAPGO's trip packages if you'd rather have the itinerary handled for you, or mix and match flights and hotels yourself if you prefer full control.",
+            ],
+            [
+                'slug' => 'art-food-and-stories-of-yogyakarta',
+                'category' => 'City Guide',
+                'date' => '28 Aug 2026',
+                'title' => 'The art, food, and stories of Yogyakarta',
+                'image' => 'https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=900&q=85',
+                'excerpt' => 'Discover useful details, local perspective, and a more considered way to travel.',
+                'content' => "Yogyakarta rewards travelers who slow down. Spend a morning at Malioboro, but save your afternoon for the quieter kampungs around the Kraton where batik and silverwork are still made by hand.\n\nFood here is a story in itself — from angkringan carts after dark to a proper plate of gudeg. Ask locally for the place that's busiest with Yogyakartans, not tourists.\n\nWhen you're ready to stay over, TAPGO lists hotels across the city center and near Malioboro — check real guest reviews before you book.",
+            ],
         ];
+    }
+
+    public function blogShow(string $slug): View
+    {
+        $post = collect($this->posts())->firstWhere('slug', $slug);
+
+        abort_unless($post, 404);
+
+        $related = collect($this->posts())->where('slug', '!=', $slug)->take(2);
+
+        return view('pages.blog-detail', ['post' => $post, 'related' => $related]);
     }
 }

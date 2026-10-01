@@ -95,17 +95,21 @@
                     <div class="row g-2">
                         @php
                             $paymentMethods = [
-                                'qris' => ['label' => 'QRIS', 'photo' => 'https://images.unsplash.com/photo-1621504450181-5d356f61d307?auto=format&fit=crop&w=200&q=80'],
-                                'bank_transfer' => ['label' => 'Bank Transfer', 'photo' => 'https://images.unsplash.com/photo-1601597111158-2fceff292cdc?auto=format&fit=crop&w=200&q=80'],
-                                'e_wallet' => ['label' => 'E-Wallet', 'photo' => 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=200&q=80'],
-                                'credit_card' => ['label' => 'Credit / Debit Card', 'photo' => 'https://images.unsplash.com/photo-1556742502-ec7c0e9f34b1?auto=format&fit=crop&w=200&q=80'],
+                                'qris' => ['label' => 'QRIS', 'logos' => ['qris']],
+                                'bank_transfer' => ['label' => 'Bank Transfer', 'logos' => ['bca', 'mandiri', 'briva']],
+                                'e_wallet' => ['label' => 'E-Wallet', 'logos' => ['shopeepay', 'dana', 'ovo']],
+                                'credit_card' => ['label' => 'Credit / Debit Card', 'logos' => ['visa', 'mastercard', 'jcb']],
                             ];
                         @endphp
                         @foreach($paymentMethods as $value => $method)
                             <div class="col-6 col-md-3">
                                 <label class="payment-method-option" style="display:block; border:1px solid #e9edf0; border-radius:.6rem; padding:.6rem; text-align:center; cursor:pointer;">
                                     <input type="radio" name="payment_method" value="{{ $value }}" @checked(old('payment_method') === $value) required style="display:block; margin: 0 auto .4rem;">
-                                    <img src="{{ $method['photo'] }}" alt="{{ $method['label'] }}" style="width:100%; height:44px; object-fit:cover; border-radius:.4rem; display:block;">
+                                    <div class="d-flex align-items-center justify-content-center gap-1" style="height:36px;">
+                                        @foreach($method['logos'] as $logo)
+                                            <img src="{{ asset('images/payment/'.$logo.'.png') }}" alt="{{ $logo }}" style="max-height:28px; max-width:48px; object-fit:contain;">
+                                        @endforeach
+                                    </div>
                                     <span class="small mt-1 d-block">{{ $method['label'] }}</span>
                                 </label>
                             </div>
