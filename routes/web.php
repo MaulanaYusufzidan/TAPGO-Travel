@@ -82,6 +82,7 @@ Route::middleware('auth')->group(function () {
 Route::post('/webhooks/midtrans', [PaymentController::class, 'handleMidtransCallback'])->name('webhooks.midtrans');
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::redirect('/', '/admin/dashboard');
     Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
 
     Route::controller(\App\Http\Controllers\Admin\DestinationController::class)->prefix('destinations')->name('destinations.')->group(function () {
@@ -120,5 +121,19 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::controller(\App\Http\Controllers\Admin\CustomerController::class)->prefix('customers')->name('customers.')->group(function () {
         Route::get('/', 'index')->name('index');
         Route::get('/{customer}', 'show')->name('show');
+    });
+
+    Route::controller(\App\Http\Controllers\Admin\ReviewController::class)->prefix('reviews')->name('reviews.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::patch('/hotel/{review}/status', 'updateHotelStatus')->name('hotel.status');
+        Route::delete('/hotel/{review}', 'destroyHotel')->name('hotel.destroy');
+        Route::patch('/trip/{tripReview}/status', 'updateTripStatus')->name('trip.status');
+        Route::delete('/trip/{tripReview}', 'destroyTrip')->name('trip.destroy');
+    });
+
+    Route::controller(\App\Http\Controllers\Admin\SettingsController::class)->prefix('settings')->name('settings.')->group(function () {
+        Route::get('/', 'edit')->name('edit');
+        Route::patch('/profile', 'updateProfile')->name('profile');
+        Route::patch('/password', 'updatePassword')->name('password');
     });
 });

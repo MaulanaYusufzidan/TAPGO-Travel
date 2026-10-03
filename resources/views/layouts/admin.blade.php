@@ -8,32 +8,46 @@
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
     @stack('styles')
 </head>
-<body>
-    <div class="d-flex" style="min-height: 100vh;">
-        <aside class="bg-dark text-light p-3" style="width: 240px; flex-shrink: 0;">
-            <p class="fw-bold fs-5 text-white mb-4">TAPGO TRAVEL <span class="d-block small text-secondary">Admin Panel</span></p>
-            <ul class="nav nav-pills flex-column gap-1">
-                <li class="nav-item"><a class="nav-link text-light {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                <li class="nav-item"><a class="nav-link text-light {{ request()->routeIs('admin.destinations.*') ? 'active' : '' }}" href="{{ route('admin.destinations.index') }}">Destinations</a></li>
-                <li class="nav-item"><a class="nav-link text-light {{ request()->routeIs('admin.trips.*') ? 'active' : '' }}" href="{{ route('admin.trips.index') }}">Trips</a></li>
-                <li class="nav-item"><a class="nav-link text-light {{ request()->routeIs('admin.schedules.*') ? 'active' : '' }}" href="{{ route('admin.schedules.index') }}">Schedules</a></li>
-                <li class="nav-item"><a class="nav-link text-light {{ request()->routeIs('admin.bookings.*') ? 'active' : '' }}" href="{{ route('admin.bookings.index') }}">Bookings</a></li>
-                <li class="nav-item"><a class="nav-link text-light {{ request()->routeIs('admin.payments.*') ? 'active' : '' }}" href="{{ route('admin.payments.index') }}">Payments</a></li>
-                <li class="nav-item"><a class="nav-link text-light {{ request()->routeIs('admin.customers.*') ? 'active' : '' }}" href="{{ route('admin.customers.index') }}">Customers</a></li>
-            </ul>
-            <hr class="border-secondary">
-            <a href="{{ url('/') }}" class="small text-secondary text-decoration-none">&larr; Kembali ke situs</a>
+<body class="admin-body">
+    <div class="admin-shell">
+        <aside class="admin-sidebar d-none d-lg-flex">
+            @include('admin.partials.sidebar-nav')
         </aside>
 
-        <main class="flex-grow-1 p-4 bg-light">
-            @if (session('status'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    {{ session('status') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <div class="offcanvas offcanvas-start admin-sidebar admin-sidebar--offcanvas d-lg-none" tabindex="-1" id="adminSidebarOffcanvas" aria-labelledby="adminSidebarOffcanvasLabel">
+            <div class="offcanvas-header">
+                <span id="adminSidebarOffcanvasLabel" class="visually-hidden">Admin navigation</span>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body pt-0">
+                @include('admin.partials.sidebar-nav')
+            </div>
+        </div>
+
+        <div class="admin-main">
+            <header class="admin-topbar">
+                <button type="button" class="admin-topbar__burger d-lg-none" data-bs-toggle="offcanvas" data-bs-target="#adminSidebarOffcanvas" aria-label="Open navigation" aria-controls="adminSidebarOffcanvas">
+                    <span></span><span></span><span></span>
+                </button>
+                <div>
+                    <h1>TAPGO Admin</h1>
+                    @hasSection('page-subtitle')<p>@yield('page-subtitle')</p>@endif
                 </div>
-            @endif
-            @yield('content')
-        </main>
+                <div class="admin-topbar__account">
+                    <span class="admin-topbar__name">{{ auth()->user()->name ?? 'Admin' }}</span>
+                </div>
+            </header>
+
+            <main class="admin-content">
+                @if (session('status'))
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ session('status') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
+                @yield('content')
+            </main>
+        </div>
     </div>
     @stack('scripts')
 </body>

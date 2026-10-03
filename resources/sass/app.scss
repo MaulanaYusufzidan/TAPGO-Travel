@@ -280,3 +280,32 @@ h2 { font-size: clamp(1.8rem, 3vw, 2.55rem); font-weight: 700; color: $ink; }
 .input-icon { position: relative; }
 .input-icon .form-control { padding-left: 2.5rem; }
 .input-icon svg, .input-icon i { position: absolute; left: .85rem; top: 50%; transform: translateY(-50%); color: #97a2b0; }
+
+// --- Admin panel shell (layouts/admin.blade.php) ---
+// Preserves the existing dark-navy sidebar / pill-nav visual direction,
+// just restructured into sidebar + topbar + content so it works on mobile.
+.admin-body { background: $tint-bg; }
+.admin-shell { display: flex; min-height: 100vh; }
+
+.admin-sidebar { flex-direction: column; width: 240px; flex-shrink: 0; background: $navy-foot; color: #fff; padding: 1.25rem 1rem; }
+.admin-sidebar--offcanvas { width: 240px; }
+.admin-sidebar__brand { font-weight: 800; font-size: 1.05rem; color: #fff; margin-bottom: 1.5rem; }
+.admin-sidebar__brand span { display: block; font-size: .72rem; font-weight: 500; color: rgba(255,255,255,.55); }
+.admin-sidebar__group { font-size: .68rem; font-weight: 700; letter-spacing: .06em; color: rgba(255,255,255,.4); margin: 1.1rem 0 .4rem; }
+.admin-sidebar__nav { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: .15rem; }
+.admin-sidebar__nav a { display: block; padding: .55rem .75rem; border-radius: 99px; color: rgba(255,255,255,.75); text-decoration: none; font-size: .88rem; transition: background .15s ease, color .15s ease; }
+.admin-sidebar__nav a:hover { background: rgba(255,255,255,.08); color: #fff; }
+.admin-sidebar__nav a.active { background: $primary; color: #fff; font-weight: 600; }
+.admin-sidebar__exit { display: block; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,.12); font-size: .8rem; color: rgba(255,255,255,.55); text-decoration: none; }
+.admin-sidebar__exit:hover { color: #fff; }
+
+.admin-main { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; }
+.admin-topbar { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.5rem; background: #fff; border-bottom: 1px solid $border-soft; }
+.admin-topbar h1 { font-size: 1.15rem; font-weight: 700; color: $ink; margin: 0; }
+.admin-topbar p { font-size: .8rem; color: #697283; margin: 0; }
+.admin-topbar__account { margin-left: auto; font-size: .85rem; color: $ink; font-weight: 600; }
+.admin-topbar__burger { border: 0; background: transparent; width: 32px; height: 32px; display: flex; flex-direction: column; justify-content: center; gap: 4px; padding: 0; }
+.admin-topbar__burger span { display: block; height: 2px; width: 100%; background: $ink; border-radius: 2px; }
+
+.admin-content { padding: 1.5rem; flex: 1 1 auto; }
+@media (max-width: 575.98px) { .admin-content { padding: 1rem; } }
