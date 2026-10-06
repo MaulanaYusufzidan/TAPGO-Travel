@@ -6,6 +6,7 @@
         'MANAGEMENT' => [
             ['route' => 'admin.bookings.index', 'match' => 'admin.bookings.*', 'label' => 'Bookings'],
             ['route' => 'admin.hotel-bookings.index', 'match' => 'admin.hotel-bookings.*', 'label' => 'Hotel Bookings'],
+            ['route' => 'admin.flight-bookings.index', 'match' => 'admin.flight-bookings.*', 'label' => 'Flight Bookings'],
             ['route' => 'admin.trips.index', 'match' => 'admin.trips.*', 'label' => 'Trips'],
             ['route' => 'admin.destinations.index', 'match' => 'admin.destinations.*', 'label' => 'Destinations'],
             ['route' => 'admin.schedules.index', 'match' => 'admin.schedules.*', 'label' => 'Schedules'],

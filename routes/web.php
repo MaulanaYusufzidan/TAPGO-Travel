@@ -117,6 +117,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::get('/{hotelBooking}', 'show')->name('show');
     });
 
+    Route::controller(\App\Http\Controllers\Admin\FlightBookingController::class)->prefix('flight-bookings')->name('flight-bookings.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/{flightBooking}', 'show')->name('show');
+    });
+
     Route::controller(\App\Http\Controllers\Admin\PaymentController::class)->prefix('payments')->name('payments.')->group(function () {
         Route::get('/', 'index')->name('index');
         Route::get('/{payment}', 'show')->name('show');
