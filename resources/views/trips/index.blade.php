@@ -14,10 +14,11 @@
         </div>
     </div>
 
-    <form method="GET" action="{{ route('trips.index') }}" class="compact-search row g-2 align-items-end">
+    <div class="compact-search row g-2 align-items-end">
+        <form method="GET" action="{{ route('trips.index') }}" class="row g-2 align-items-end w-100">
         <div class="col-md-4">
-            <label for="q">Search</label>
-            <input type="text" name="q" id="q" class="form-control" placeholder="Trip name..." value="{{ $filters['q'] ?? '' }}">
+            <label for="q">Where to?</label>
+            <input type="text" name="q" id="q" class="form-control" placeholder="Trip name or destination..." value="{{ $filters['q'] ?? '' }}">
         </div>
         <div class="col-md-3">
             <label for="destination">Destination</label>
@@ -29,22 +30,32 @@
             </select>
         </div>
         <div class="col-md-3">
-            <label for="sort">Sort by</label>
-            <select name="sort" id="sort" class="form-select">
-                <option value="recommended" @selected(($filters['sort'] ?? 'recommended') === 'recommended')>Recommended</option>
-                <option value="price_asc" @selected(($filters['sort'] ?? '') === 'price_asc')>Price: low to high</option>
-                <option value="price_desc" @selected(($filters['sort'] ?? '') === 'price_desc')>Price: high to low</option>
-                <option value="rating" @selected(($filters['sort'] ?? '') === 'rating')>Guest rating</option>
-                <option value="popularity" @selected(($filters['sort'] ?? '') === 'popularity')>Popularity</option>
-            </select>
+            <label for="date">When?</label>
+            <input type="date" name="date" id="date" class="form-control" value="{{ $filters['date'] ?? '' }}" min="{{ now()->toDateString() }}">
         </div>
         <div class="col-md-2 d-grid">
             <button type="submit" class="btn btn-warning">🔍 Search</button>
         </div>
-    </form>
+        </form>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-3 mt-3">
+        <span class="small text-muted">Showing {{ $trips->total() }} search results</span>
+        <div class="d-flex align-items-center gap-2">
+            <button type="button" class="btn btn-outline-secondary btn-sm" disabled title="Coming soon">🗺️ Map</button>
+            <button type="button" class="btn btn-dark btn-sm" data-bs-toggle="collapse" data-bs-target="#tripFilters">☰ Filter</button>
+            @php $currentSort = $filters['sort'] ?? 'recommended'; @endphp
+            <div class="btn-group" role="group" aria-label="Sort trips">
+                @foreach(['recommended' => 'Our Trending', 'popularity' => 'Most Popular', 'price_asc' => 'Lowest Price'] as $value => $label)
+                    <a href="{{ request()->fullUrlWithQuery(['sort' => $value]) }}"
+                       class="btn btn-sm {{ $currentSort === $value ? 'btn-primary' : 'btn-outline-secondary' }}">{{ $label }}</a>
+                @endforeach
+            </div>
+        </div>
+    </div>
 
     <div class="row g-4">
-        <div class="col-lg-3">
+        <div class="col-lg-3 collapse show" id="tripFilters">
             <aside class="filter-sidebar">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <strong>Filter by</strong>
@@ -80,10 +91,6 @@
         </div>
 
         <div class="col-lg-9">
-            <div class="results-toolbar">
-                <span><strong>{{ $trips->total() }} trips found</strong></span>
-            </div>
-
             @if ($trips->isEmpty())
                 <div class="text-center py-5">
                     <p class="lead">No trips match your search yet.</p>

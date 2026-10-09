@@ -16,6 +16,7 @@ class TripController extends Controller
 
         $trips = Trip::query()
             ->with(['destination', 'category'])
+            ->withCount(['itineraries', 'inclusions'])
             ->published()
             ->search($request->get('q'))
             ->when($request->filled('destination'), function ($q) use ($request) {
@@ -23,6 +24,9 @@ class TripController extends Controller
             })
             ->when($request->filled('category'), function ($q) use ($request) {
                 $q->whereHas('category', fn ($c) => $c->where('slug', $request->get('category')));
+            })
+            ->when($request->filled('date'), function ($q) use ($request) {
+                $q->whereHas('schedules', fn ($s) => $s->where('date', '>=', $request->get('date'))->available());
             })
             ->when($request->filled('price_min'), fn ($q) => $q->where('base_price', '>=', $request->get('price_min')))
             ->when($request->filled('price_max'), fn ($q) => $q->where('base_price', '<=', $request->get('price_max')))
@@ -38,7 +42,7 @@ class TripController extends Controller
             'trips' => $trips,
             'destinations' => Destination::published()->orderBy('name')->get(),
             'categories' => Category::orderBy('name')->get(),
-            'filters' => $request->only(['q', 'destination', 'category', 'price_min', 'price_max', 'sort']),
+            'filters' => $request->only(['q', 'destination', 'category', 'date', 'price_min', 'price_max', 'sort']),
         ]);
     }
 
@@ -46,7 +50,7 @@ class TripController extends Controller
     {
         abort_unless($trip->status === 'published', 404);
 
-        $trip->load(['destination', 'category', 'images', 'itineraries', 'inclusions', 'exclusions']);
+        $trip->load(['destination', 'category', 'images', 'itineraries', 'inclusions', 'exclusions', 'reviews' => fn ($q) => $q->published()->with('user')->latest()]);
 
         $schedules = $trip->schedules()
             ->available()

@@ -147,6 +147,8 @@ class TripSeeder extends Seeder
 
     public function run(): void
     {
+        $index = 0;
+
         foreach ($this->trips as $destinationName => $data) {
             $destination = Destination::where('name', $destinationName)->first();
 
@@ -157,6 +159,10 @@ class TripSeeder extends Seeder
             $category = Category::where('name', $data['category'])->first();
 
             $slug = Str::slug($data['title']);
+
+            // Diskon promo di sebagian trip aja (index genap), variasi 15/20/28%.
+            $discount = $index % 2 === 0 ? [15, 20, 28][$index % 3] : null;
+            $index++;
 
             $trip = Trip::updateOrCreate(
                 ['slug' => $slug],
@@ -170,6 +176,7 @@ class TripSeeder extends Seeder
                     'min_group_size' => $data['min_group_size'],
                     'max_group_size' => $data['max_group_size'],
                     'base_price' => $data['base_price'],
+                    'discount_percentage' => $discount,
                     'rating_avg' => $data['rating_avg'],
                     'reviews_count' => $data['reviews_count'],
                     'is_featured' => $data['is_featured'],

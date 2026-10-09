@@ -23,6 +23,7 @@ class Trip extends Model
         'min_group_size',
         'max_group_size',
         'base_price',
+        'discount_percentage',
         'rating_avg',
         'reviews_count',
         'is_featured',
@@ -31,9 +32,19 @@ class Trip extends Model
 
     protected $casts = [
         'base_price' => 'decimal:2',
+        'discount_percentage' => 'integer',
         'rating_avg' => 'decimal:2',
         'is_featured' => 'boolean',
     ];
+
+    public function priceAfterDiscount(): float
+    {
+        if (! $this->discount_percentage) {
+            return (float) $this->base_price;
+        }
+
+        return round((float) $this->base_price * (1 - $this->discount_percentage / 100), -3);
+    }
 
     public function getRouteKeyName(): string
     {
@@ -73,6 +84,11 @@ class Trip extends Model
     public function schedules(): HasMany
     {
         return $this->hasMany(Schedule::class);
+    }
+
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(TripReview::class);
     }
 
     public function scopePublished($query)

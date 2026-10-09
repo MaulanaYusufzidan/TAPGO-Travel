@@ -21,26 +21,41 @@
                 @endif
             </p>
         </div>
-        <button type="button" class="btn btn-outline-primary btn-sm" onclick="navigator.clipboard && navigator.clipboard.writeText(window.location.href); this.textContent='Link copied ✓';">↗ Share</button>
+        <div class="d-flex gap-2">
+            <button type="button" class="btn btn-outline-primary btn-sm" title="Bookmark (belum tersambung ke akun)">🔖 Bookmark</button>
+            <button type="button" class="btn btn-outline-primary btn-sm" onclick="navigator.clipboard && navigator.clipboard.writeText(window.location.href); this.textContent='Link copied ✓';">↗ Share</button>
+        </div>
     </div>
 
     {{-- Gallery --}}
-    @php $images = $trip->images; @endphp
+    @php
+        $images = $trip->images;
+        $galleryFallback = 'https://images.unsplash.com/photo-1530789253388-582c481c54b0?auto=format&fit=crop&w=1400&q=85';
+        $galleryUrls = $images->map(fn ($img) => asset('storage/' . $img->image_path))->values();
+    @endphp
     @if ($images->isNotEmpty())
         <div class="gallery-grid" style="height: 420px;">
             <div class="gallery-grid__main">
-                <img src="{{ asset('storage/' . $images->first()->image_path) }}" alt="{{ $trip->title }}">
+                <a href="#" onclick="tapgoLightboxOpen(event, 0)"><img src="{{ $galleryUrls[0] }}" alt="{{ $trip->title }}" onerror="this.onerror=null;this.src='{{ $galleryFallback }}'"></a>
             </div>
             <div class="gallery-grid__thumbs">
                 @foreach ($images->skip(1)->take(4) as $i => $image)
-                    <a href="{{ asset('storage/' . $image->image_path) }}" target="_blank" rel="noopener">
-                        <img src="{{ asset('storage/' . $image->image_path) }}" alt="{{ $image->caption ?? $trip->title }}">
-                        @if ($i === 3 && $images->count() > 5)
+                    <a href="#" onclick="tapgoLightboxOpen(event, {{ $loop->iteration }})" style="position:relative; display:block;">
+                        <img src="{{ asset('storage/' . $image->image_path) }}" alt="{{ $image->caption ?? $trip->title }}" onerror="this.onerror=null;this.src='{{ $galleryFallback }}'">
+                        @if ($loop->last && $images->count() > 5)
                             <span class="gallery-grid__more">+{{ $images->count() - 5 }} more photos</span>
                         @endif
                     </a>
                 @endforeach
             </div>
+        </div>
+
+        <div id="tapgo-lightbox" style="display:none; position:fixed; inset:0; background:rgba(10,15,25,.92); z-index:1050; align-items:center; justify-content:center;">
+            <button type="button" onclick="tapgoLightboxClose()" aria-label="Close" style="position:absolute; top:20px; right:24px; background:none; border:none; color:#fff; font-size:2rem; line-height:1; cursor:pointer;">&times;</button>
+            <button type="button" onclick="tapgoLightboxNav(-1)" aria-label="Previous" style="position:absolute; left:16px; background:none; border:none; color:#fff; font-size:2.5rem; cursor:pointer;">&#8249;</button>
+            <img id="tapgo-lightbox-img" src="" alt="{{ $trip->title }}" style="max-width:88vw; max-height:82vh; object-fit:contain; border-radius:.5rem;" onerror="this.onerror=null;this.src='{{ $galleryFallback }}'">
+            <button type="button" onclick="tapgoLightboxNav(1)" aria-label="Next" style="position:absolute; right:16px; background:none; border:none; color:#fff; font-size:2.5rem; cursor:pointer;">&#8250;</button>
+            <span id="tapgo-lightbox-counter" style="position:absolute; bottom:20px; color:#fff; font-size:.85rem;"></span>
         </div>
     @else
         <div class="ratio ratio-21x9 bg-secondary-subtle rounded mb-4"></div>
@@ -52,15 +67,23 @@
             <div class="tapgo-tabs" role="tablist">
                 <a href="#overview" class="active" data-tab-target="overview">Overview</a>
                 <a href="#itinerary" data-tab-target="itinerary">Itinerary</a>
-                <a href="#inclusions" data-tab-target="inclusions">Inclusions &amp; Exclusions</a>
-                <a href="#reviews" data-tab-target="reviews">Reviews</a>
+                <a href="#hotels-transfers" data-tab-target="hotels-transfers">Hotels &amp; Transfers</a>
             </div>
 
             <section class="detail-panel tab-pane" id="overview">
                 <h2>Overview</h2>
                 <p class="text-muted">{{ $trip->description }}</p>
                 @if ($trip->meeting_point)
-                    <p class="mb-0"><strong>Meeting point:</strong> {{ $trip->meeting_point }}</p>
+                    <p class="mb-3"><strong>Meeting point:</strong> {{ $trip->meeting_point }}</p>
+                @endif
+
+                @if ($trip->inclusions->isNotEmpty())
+                    <h3 class="h6 fw-bold mt-4 mb-2">Tour Highlights</h3>
+                    <div class="row g-2">
+                        @foreach ($trip->inclusions->take(6) as $inc)
+                            <div class="col-md-6"><span style="color:#0f9d75;">✓</span> {{ $inc->item }}</div>
+                        @endforeach
+                    </div>
                 @endif
             </section>
 
@@ -83,8 +106,37 @@
                 </section>
             @endif
 
+            @php
+                $hotelKeywords = ['hotel', 'akomodasi', 'penginapan', 'bintang', 'kamar', 'resort'];
+                $transferKeywords = ['transfer', 'transportasi', 'antar', 'jemput', 'shuttle', 'ber-ac', 'bus', 'kereta', 'pesawat', 'airfare'];
+                $hotelItems = $trip->inclusions->filter(fn ($i) => collect($hotelKeywords)->contains(fn ($k) => str_contains(strtolower($i->item), $k)));
+                $transferItems = $trip->inclusions->filter(fn ($i) => collect($transferKeywords)->contains(fn ($k) => str_contains(strtolower($i->item), $k)));
+            @endphp
+            <section class="detail-panel tab-pane" id="hotels-transfers">
+                <h2>Hotels &amp; Transfers</h2>
+                @if ($hotelItems->isNotEmpty())
+                    <h3 class="h6 fw-semibold mb-2">Accommodation</h3>
+                    <ul class="list-unstyled mb-3">
+                        @foreach ($hotelItems as $item)
+                            <li class="mb-2">🏨 {{ $item->item }}</li>
+                        @endforeach
+                    </ul>
+                @endif
+                @if ($transferItems->isNotEmpty())
+                    <h3 class="h6 fw-semibold mb-2">Transfers</h3>
+                    <ul class="list-unstyled mb-0">
+                        @foreach ($transferItems as $item)
+                            <li class="mb-2">🚌 {{ $item->item }}</li>
+                        @endforeach
+                    </ul>
+                @endif
+                @if ($hotelItems->isEmpty() && $transferItems->isEmpty())
+                    <p class="text-muted mb-0">Detail akomodasi & transfer belum dicantumkan untuk trip ini — lihat Inclusions di bawah untuk gambaran lengkap.</p>
+                @endif
+            </section>
+
             @if ($trip->inclusions->isNotEmpty() || $trip->exclusions->isNotEmpty())
-                <section class="detail-panel tab-pane" id="inclusions">
+                <section class="detail-panel" id="inclusions">
                     <h2>Inclusions &amp; Exclusions</h2>
                     <div class="row">
                         @if ($trip->inclusions->isNotEmpty())
@@ -111,16 +163,34 @@
                 </section>
             @endif
 
-            <section class="detail-panel tab-pane" id="reviews">
+            <section class="detail-panel" id="reviews">
                 <h2>Guest Reviews</h2>
-                @if ($trip->reviews_count > 0)
+                @if ($trip->reviews->isNotEmpty())
                     <div class="review-score">
                         <div class="review-score__big">
                             <strong>{{ number_format($trip->rating_avg, 1) }}</strong>
                             <span>{{ $trip->reviews_count }} reviews</span>
                         </div>
-                        <p class="text-muted small mb-0">Guests rate this trip {{ number_format($trip->rating_avg, 1) }} out of 5 based on {{ $trip->reviews_count }} completed bookings.</p>
+                        <p class="text-muted small mb-0">Guests rate this trip {{ number_format($trip->rating_avg, 1) }} out of 5 based on {{ $trip->reviews_count }} reviews.</p>
                     </div>
+
+                    @foreach ($trip->reviews->take(6) as $review)
+                        <div class="d-flex gap-3 border rounded p-3 mt-3" style="border-color:#e9edf0 !important;">
+                            <div style="width:48px;height:48px;min-width:48px;border-radius:.5rem;background:#e7ecff;color:#5b6cf0;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.2rem;">{{ strtoupper(substr($review->user->name ?? 'G', 0, 1)) }}</div>
+                            <div class="flex-grow-1">
+                                <div class="d-flex justify-content-between">
+                                    <strong class="small">{{ $review->user->name ?? 'Guest' }}</strong>
+                                    <span class="small text-muted">{{ $review->created_at->translatedFormat('d M Y') }}</span>
+                                </div>
+                                <span class="small text-warning">{{ str_repeat('★', $review->rating) }}{{ str_repeat('☆', 5 - $review->rating) }}</span>
+                                <p class="text-muted small mb-0 mt-1">{{ $review->comment }}</p>
+                            </div>
+                        </div>
+                    @endforeach
+
+                    @guest
+                        <div class="alert alert-info small mt-3 mb-0">Login to submit a review. <a href="{{ route('login') }}">Login</a></div>
+                    @endguest
                 @else
                     <p class="text-muted">No reviews yet — be the first to travel and share your experience.</p>
                 @endif
@@ -130,8 +200,18 @@
         <div class="col-lg-4">
             <div class="booking-card" id="schedule-picker">
                 @if ($trip->base_price)
-                    <p class="text-muted small mb-1">Starting from</p>
-                    <p class="h3 fw-bold mb-3" style="color:#17233b;">Rp {{ number_format($trip->base_price, 0, ',', '.') }}<span class="fs-6 text-muted fw-normal"> / person</span></p>
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            @if ($trip->discount_percentage)
+                                <span class="price-was d-block">Rp {{ number_format($trip->base_price, 0, ',', '.') }}</span>
+                            @endif
+                            <p class="h3 fw-bold mb-0" style="color:#17233b;">Rp {{ number_format($trip->priceAfterDiscount(), 0, ',', '.') }}<span class="fs-6 text-muted fw-normal"> / person</span></p>
+                        </div>
+                        @if ($trip->discount_percentage)
+                            <span class="badge bg-success-subtle text-success">{{ $trip->discount_percentage }}% OFF</span>
+                        @endif
+                    </div>
+                    <p class="small text-muted mb-3">*Excluding applicable taxes</p>
                 @endif
 
                 @if ($schedules->isEmpty())
@@ -168,11 +248,20 @@
                             <span id="schedule-total">Rp 0</span>
                         </div>
 
-                        <button type="submit" class="btn btn-primary w-100">Pesan Sekarang</button>
+                        <button type="submit" class="btn btn-primary w-100">Proceed to Book Online</button>
                     </form>
                 @endif
 
                 <hr>
+                <a href="{{ route('contact') }}" class="btn btn-outline-primary w-100 mb-3">Send Inquiry</a>
+
+                <p class="small fw-semibold text-uppercase text-muted mb-2">Coupons &amp; Offers</p>
+                <div class="d-flex gap-2 mb-1">
+                    <input type="text" class="form-control form-control-sm" placeholder="Have a coupon code?" disabled>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" disabled>Apply</button>
+                </div>
+                <p class="small text-muted mb-3"><em>Coupon belum aktif.</em></p>
+
                 <p class="small fw-semibold text-uppercase text-muted mb-2">Good to know</p>
                 <ul class="list-unstyled small text-muted mb-0">
                     <li class="mb-2">✅ Instant confirmation after payment</li>
@@ -201,6 +290,30 @@
 </main>
 
 @push('scripts')
+<script>
+window.tapgoGalleryImages = @json($galleryUrls ?? []);
+window.tapgoLightboxIndex = 0;
+function tapgoLightboxRender() {
+    var imgs = window.tapgoGalleryImages;
+    if (!imgs.length) return;
+    document.getElementById('tapgo-lightbox-img').src = imgs[window.tapgoLightboxIndex];
+    document.getElementById('tapgo-lightbox-counter').textContent = (window.tapgoLightboxIndex + 1) + ' / ' + imgs.length;
+}
+function tapgoLightboxOpen(e, index) {
+    e.preventDefault();
+    window.tapgoLightboxIndex = index || 0;
+    tapgoLightboxRender();
+    document.getElementById('tapgo-lightbox').style.display = 'flex';
+}
+function tapgoLightboxClose() {
+    document.getElementById('tapgo-lightbox').style.display = 'none';
+}
+function tapgoLightboxNav(dir) {
+    var imgs = window.tapgoGalleryImages;
+    window.tapgoLightboxIndex = (window.tapgoLightboxIndex + dir + imgs.length) % imgs.length;
+    tapgoLightboxRender();
+}
+</script>
 <script>
 (function () {
     // Tabs

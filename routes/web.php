@@ -6,33 +6,19 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\DestinationController;
+use App\Http\Controllers\FlightBookingController;
+use App\Http\Controllers\FlightController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\HotelBookingController;
+use App\Http\Controllers\HotelController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\TripController;
 use App\Http\Controllers\PageController;
-use App\Models\Destination;
-use App\Models\Trip;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    $featuredDestinations = collect();
-    $featuredTrips = collect();
-
-    // Keep the marketing page available during a temporary database outage.
-    // In normal operation these are populated from the existing marketplace data.
-    try {
-        $featuredDestinations = Destination::published()->featured()->take(6)->get();
-        $featuredTrips = Trip::with(['destination', 'images'])->published()->featured()->take(6)->get();
-    } catch (\Illuminate\Database\QueryException) {
-        // The view has intentional empty states for this condition.
-    }
-
-    return view('home', [
-        'featuredDestinations' => $featuredDestinations,
-        'featuredTrips' => $featuredTrips,
-    ]);
-})->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
@@ -53,11 +39,12 @@ Route::get('/destinations', [DestinationController::class, 'index'])->name('dest
 Route::get('/destinations/{destination}', [DestinationController::class, 'show'])->name('destinations.show');
 Route::get('/trips', [TripController::class, 'index'])->name('trips.index');
 Route::get('/trips/{trip}', [TripController::class, 'show'])->name('trips.show');
-Route::get('/hotels', [PageController::class, 'hotels'])->name('hotels.index');
-Route::get('/hotels/{slug}', [PageController::class, 'hotel'])->name('hotels.show');
-Route::get('/flights', [PageController::class, 'flights'])->name('flights.index');
-Route::get('/flights/{id}', [PageController::class, 'flight'])->name('flights.show');
+Route::get('/hotels', [HotelController::class, 'index'])->name('hotels.index');
+Route::get('/hotels/{hotel:slug}', [HotelController::class, 'show'])->name('hotels.show');
+Route::get('/flights', [FlightController::class, 'index'])->name('flights.index');
+Route::get('/flights/{flightOffer}', [FlightController::class, 'show'])->name('flights.show');
 Route::get('/blog', [PageController::class, 'blog'])->name('blog');
+Route::get('/blog/{slug}', [PageController::class, 'blogShow'])->name('blog.show');
 Route::get('/about', [PageController::class, 'about'])->name('about');
 Route::get('/career', [PageController::class, 'career'])->name('career');
 Route::get('/contact', [PageController::class, 'contact'])->name('contact');
@@ -76,11 +63,26 @@ Route::middleware('auth')->group(function () {
     Route::post('/bookings/{booking}/verify-payment', [PaymentController::class, 'verifyStatus'])->name('payments.verify');
     Route::get('/bookings/{booking}/ticket', [TicketController::class, 'show'])->name('bookings.ticket');
     Route::get('/bookings/{booking}/invoice', [InvoiceController::class, 'show'])->name('bookings.invoice');
+
+    Route::post('/hotel-bookings', [HotelBookingController::class, 'store'])->name('hotel-bookings.store');
+    Route::get('/hotel-checkout', [HotelBookingController::class, 'checkout'])->name('hotel-checkout.show');
+    Route::post('/hotel-checkout/confirm', [HotelBookingController::class, 'confirm'])->name('hotel-bookings.confirm');
+    Route::get('/hotel-bookings/{hotelBooking}/confirmation', [HotelBookingController::class, 'confirmation'])->name('hotel-bookings.confirmation');
+    Route::get('/hotel-bookings/{hotelBooking}/payment', [HotelBookingController::class, 'payment'])->name('hotel-bookings.payment');
+    Route::post('/hotel-bookings/{hotelBooking}/payment/simulate', [HotelBookingController::class, 'simulatePayment'])->name('hotel-bookings.payment.simulate');
+
+    Route::post('/flight-bookings', [FlightBookingController::class, 'store'])->name('flight-bookings.store');
+    Route::get('/flight-checkout', [FlightBookingController::class, 'checkout'])->name('flight-checkout.show');
+    Route::post('/flight-checkout/confirm', [FlightBookingController::class, 'confirm'])->name('flight-bookings.confirm');
+    Route::get('/flight-bookings/{flightBooking}/confirmation', [FlightBookingController::class, 'confirmation'])->name('flight-bookings.confirmation');
+    Route::get('/flight-bookings/{flightBooking}/payment', [FlightBookingController::class, 'payment'])->name('flight-bookings.payment');
+    Route::post('/flight-bookings/{flightBooking}/payment/simulate', [FlightBookingController::class, 'simulatePayment'])->name('flight-bookings.payment.simulate');
 });
 
 Route::post('/webhooks/midtrans', [PaymentController::class, 'handleMidtransCallback'])->name('webhooks.midtrans');
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::redirect('/', '/admin/dashboard');
     Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
 
     Route::controller(\App\Http\Controllers\Admin\DestinationController::class)->prefix('destinations')->name('destinations.')->group(function () {
@@ -119,5 +121,19 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::controller(\App\Http\Controllers\Admin\CustomerController::class)->prefix('customers')->name('customers.')->group(function () {
         Route::get('/', 'index')->name('index');
         Route::get('/{customer}', 'show')->name('show');
+    });
+
+    Route::controller(\App\Http\Controllers\Admin\ReviewController::class)->prefix('reviews')->name('reviews.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::patch('/hotel/{review}/status', 'updateHotelStatus')->name('hotel.status');
+        Route::delete('/hotel/{review}', 'destroyHotel')->name('hotel.destroy');
+        Route::patch('/trip/{tripReview}/status', 'updateTripStatus')->name('trip.status');
+        Route::delete('/trip/{tripReview}', 'destroyTrip')->name('trip.destroy');
+    });
+
+    Route::controller(\App\Http\Controllers\Admin\SettingsController::class)->prefix('settings')->name('settings.')->group(function () {
+        Route::get('/', 'edit')->name('edit');
+        Route::patch('/profile', 'updateProfile')->name('profile');
+        Route::patch('/password', 'updatePassword')->name('password');
     });
 });
