@@ -1,6 +1,6 @@
-# TAPGO Travel ✈️
+ TAPGO Travel ✈️
 
-> **Travel & Tour Booking Platform — Currently in Development**
+> Travel & Tour Booking Platform — Currently in Development**
 
 TAPGO Travel adalah project website **travel dan tour booking** yang sedang dikembangkan sebagai platform untuk membantu pengguna menemukan dan merencanakan perjalanan dengan pengalaman browsing yang modern, informatif, dan mudah digunakan.
 
@@ -8,9 +8,9 @@ Project ini dibangun sebagai bagian dari pengembangan portfolio **Web Developmen
 
 ---
 
-## 🚧 Project Status
+ 🚧 Project Status
 
-**TAPGO Travel is currently under development.**
+TAPGO Travel is currently under development.**
 
 Beberapa bagian website masih dalam proses pengerjaan, termasuk penyempurnaan UI/UX, halaman destinasi, detail perjalanan, dan fitur booking.
 
@@ -18,7 +18,7 @@ Beberapa bagian website masih dalam proses pengerjaan, termasuk penyempurnaan UI
 
 ---
 
-## ✨ Planned Features
+ ✨ Planned Features
 
 Beberapa fitur yang direncanakan untuk TAPGO Travel:
 
@@ -40,7 +40,7 @@ Beberapa fitur yang direncanakan untuk TAPGO Travel:
 
 ---
 
-## 🎨 Design Direction
+🎨 Design Direction
 
 TAPGO Travel mengambil inspirasi dari beberapa modern travel booking websites, terutama dalam hal:
 
@@ -57,7 +57,7 @@ Design akan dikembangkan kembali dengan identitas **TAPGO Travel** dan tidak dim
 
 ---
 
-## 🛠️ Tech Stack
+ 🛠️ Tech Stack
 
 Project ini menggunakan beberapa teknologi berikut:
 
